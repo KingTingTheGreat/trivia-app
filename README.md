@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trivia
 
-## Getting Started
+A live buzzer to play trivia on your local network
 
-First, run the development server:
+## Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Backend
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Install [Go version 1.23 or higher](https://go.dev/doc/install)
+- Create a **.env.local** file with the path go-backend/.env and add a password; PASSWORD="yourpasswordhere"
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Frontend
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Install [Node.js](https://nodejs.org/en/download/)
+- Edit the file nextjs-frontend/ip.ts to include your device's IP address on your local network
 
-## Learn More
+## How to run
 
-To learn more about Next.js, take a look at the following resources:
+- Use the command ```npm run build``` to build the program
+- Use the command ```npm run start``` to run it
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Players
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Visit _HostIP_:3000 while on the same network
+- Enter your name and advance to the next page
+- You will now see a buzzer, clicking it will notify the host
 
-## Deploy on Vercel
+### Host
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Visit _HostIP_:3000/host to view the players who have buzzed in sorted in chronological order, as well as the time they buzzed in down to the millisecond
+- This page will also display the players ranked by score, score seniority is used as a tie-breaker when scores are equal
+- Go to _HostIP_:3000/control to access controls
+  - Enter the password you put in your **.env.local** file
+  - Enter a player's name and the number of points you'd like to give them
+    - A positive value will add to their score while a negative value will subtract from it. Negative scores are possible.
+  - Reset Buzzers will clear the current buzzed in list/state but will not affect anything else
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Additional Pages
+
+#### Leaderboard
+
+- Used to only view the players ranked by score
+
+#### Stats
+
+- View players ranked by score as well as the questions each player has received points for
+
+#### Buzzed-In
+
+- See the players as they buzz in for the current question
+- This page should play a buzzer sound when players buzz in
