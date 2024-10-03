@@ -8,14 +8,14 @@ import (
 )
 
 type websocketStore struct {
-	mu sync.RWMutex
+	mu            sync.RWMutex
 	websocketData map[*websocket.Conn]bool
 }
 
 func (ws *websocketStore) InsertConn(conn *websocket.Conn) {
 	ws.mu.Lock()
 	defer ws.mu.Unlock()
-	ws.websocketData[conn] = true 
+	ws.websocketData[conn] = true
 }
 
 func (ws *websocketStore) DeleteConn(conn *websocket.Conn) {
@@ -56,7 +56,7 @@ func (ws *websocketStore) KeepAlive(conn *websocket.Conn) {
 
 func NewWebsocketStore() websocketStore {
 	return websocketStore{
-		mu: sync.RWMutex{},
+		mu:            sync.RWMutex{},
 		websocketData: make(map[*websocket.Conn]bool),
 	}
 }

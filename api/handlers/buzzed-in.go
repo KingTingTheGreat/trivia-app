@@ -10,7 +10,7 @@ import (
 var buzzedInWS = shared.NewWebsocketStore()
 
 type buzzedInPlayer struct {
-	Name string 
+	Name string
 	Time string
 }
 
@@ -45,7 +45,7 @@ func makeBuzzedIn() []buzzedInPlayer {
 
 	buzzedIn := make([]buzzedInPlayer, 0)
 	for _, player := range playerList {
-		// filter out players who have not buzzed in 
+		// filter out players who have not buzzed in
 		if player.BuzzedIn.IsZero() {
 			log.Println("skiping buzz")
 			continue // could probably break loop instead
@@ -58,7 +58,7 @@ func makeBuzzedIn() []buzzedInPlayer {
 	}
 
 	log.Println(buzzedIn)
-	
+
 	return buzzedIn
 }
 

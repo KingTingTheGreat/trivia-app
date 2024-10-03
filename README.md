@@ -20,6 +20,8 @@ A live buzzer to play trivia on your local network
 - Use the command ```npm run start``` to run it
 
 ### Players
+-   [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+-   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 - Visit _HostIP_:3000 while on the same network
 - Enter your name and advance to the next page

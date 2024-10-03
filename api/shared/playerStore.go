@@ -22,7 +22,7 @@ func generateToken() string {
 }
 
 type Player struct {
-	CleanName	 string
+	CleanName        string
 	Name             string
 	Score            int
 	ButtonReady      bool
@@ -77,15 +77,15 @@ func (ps *playerStore) InsertPlayer(playerName string) (string, error) {
 		token = generateToken()
 	}
 
-	player := Player {
-		CleanName: cleanName,
-		Name: playerName,
-		Score: 0,
-		ButtonReady: true,
+	player := Player{
+		CleanName:        cleanName,
+		Name:             playerName,
+		Score:            0,
+		ButtonReady:      true,
 		CorrectQuestions: make([]string, 0),
-		LastUpdate: time.Now(),
-		BuzzedIn: time.Time{},
-		Websocket: nil,
+		LastUpdate:       time.Now(),
+		BuzzedIn:         time.Time{},
+		Websocket:        nil,
 	}
 
 	ps.playerData[token] = player
@@ -172,7 +172,7 @@ func (ps *playerStore) AllTokenPlayers() []TokenPlayer {
 }
 
 type PlayerNameToken struct {
-	Name string 
+	Name  string
 	Token string
 }
 
@@ -183,7 +183,7 @@ func (ps *playerStore) AllNamesTokens() []PlayerNameToken {
 	i := 0
 	for name, token := range ps.playerNames {
 		allNamesTokens[i] = PlayerNameToken{
-			Name: name, 
+			Name:  name,
 			Token: token,
 		}
 		i++
@@ -233,14 +233,14 @@ func (ps *playerStore) ResetBuzzers() {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
 	log.Println("got lock")
-	
+
 	for token, player := range ps.playerData {
 		// update vars
-		player.ButtonReady = true 
+		player.ButtonReady = true
 		player.BuzzedIn = time.Time{}
 		log.Println("reseting buzzer for", player.Name)
 
-		// send message to websocket/client 
+		// send message to websocket/client
 		if player.Websocket != nil {
 			err := player.Websocket.WriteMessage(websocket.TextMessage, []byte("ready"))
 			// FIX THIS ERROR HANDLING. probably causes error with handler
@@ -252,7 +252,7 @@ func (ps *playerStore) ResetBuzzers() {
 		} else {
 			log.Println("websocket is nil")
 		}
-		
+
 		ps.playerData[token] = player
 	}
 }

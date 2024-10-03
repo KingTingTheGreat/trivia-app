@@ -10,7 +10,7 @@ import (
 var leaderboardWS = shared.NewWebsocketStore()
 
 type leaderboardPlayer struct {
-	Name string 
+	Name  string
 	Score int
 }
 
@@ -46,7 +46,7 @@ func makeLeaderboard() []leaderboardPlayer {
 	leaderboardList := make([]leaderboardPlayer, len(playerList))
 	for i, player := range playerList {
 		leaderboardList[i] = leaderboardPlayer{
-			Name: player.Name,
+			Name:  player.Name,
 			Score: player.Score,
 		}
 	}

@@ -9,7 +9,7 @@ import (
 var playerListWS = shared.NewWebsocketStore()
 
 type playerListPlayer struct {
-	Name string 
+	Name  string
 	Token string
 }
 
@@ -20,7 +20,7 @@ func PlayerList(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	a := shared.PlayerStore.AllNamesTokens()
 	log.Println("sending", a)
 	conn.WriteJSON(shared.PlayerStore.AllNamesTokens())
@@ -36,5 +36,3 @@ func BroadcastPlayerList() {
 		playerListWS.WriteToAll(playerList)
 	}
 }
-
-

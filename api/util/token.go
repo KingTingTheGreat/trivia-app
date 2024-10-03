@@ -15,7 +15,7 @@ func ReadToken(r *http.Request) (string, error) {
 
 func WriteToken(w http.ResponseWriter, token string) {
 	cookie := http.Cookie{
-		Name: COOKIE_NAME,
+		Name:  COOKIE_NAME,
 		Value: token,
 	}
 

@@ -30,78 +30,75 @@ const Leaderboard = () => {
     //    }, [ws])
 
     useEffect(() => {
+        if (waitingToReconnect) {
+            return;
+        }
 
-	if (waitingToReconnect) {
-	    return;
-	}
+        // Only set up the websocket once
+        if (!wsRef.current) {
+            const ws = new WebSocket("/api/leaderboard");
+            wsRef.current = ws;
 
-	// Only set up the websocket once
-	if (!wsRef.current) {
-	    const ws = new WebSocket("/api/leaderboard");
-	    wsRef.current = ws;
+            ws.onerror = (e) => console.error(e);
 
-	    ws.onerror = (e) => console.error(e);
+            ws.onopen = () => {
+                console.log("ws leaderboard opened");
+                // client.send('ping');
+            };
 
-	    ws.onopen = () => {
-		console.log('ws leaderboard opened');
-		// client.send('ping');
-	    };
+            ws.onclose = () => {
+                if (wsRef.current) {
+                    console.log("ws leaderboard closed by server");
+                } else {
+                    console.log(
+                        "ws leaderboard closed by app component unmount"
+                    );
+                    return;
+                }
 
-	    ws.onclose = () => {
+                if (waitingToReconnect) {
+                    return;
+                }
 
-		if (wsRef.current) {
-		    console.log('ws leaderboard closed by server');
-		} else {
-		    console.log('ws leaderboard closed by app component unmount');
-		    return;
-		}
+                console.log("ws leaderboard closed");
 
-		if (waitingToReconnect) {
-		    return;
-		};
+                setWaitingToReconnect(true);
 
-		console.log('ws leaderboard closed');
+                setTimeout(() => setWaitingToReconnect(false), 500);
+            };
 
-		setWaitingToReconnect(true);
+            ws.onmessage = (e) => {
+                console.log("ws leaderboard received", e);
+                const d = JSON.parse(e.data) ?? [];
+                setPlayers(d);
+                console.log(d);
+            };
 
-		setTimeout(() => setWaitingToReconnect(false), 500);
-	    };
-
-	    ws.onmessage = (e) => {
-		console.log("ws leaderboard received", e);
-		const d = JSON.parse(e.data) ?? []
-		setPlayers(d);
-		console.log(d)
-	    };
-
-
-	    return () => {
-		console.log('Cleanup ws leaderboard');
-		ws.close();
-		wsRef.current = null;
-	    }
-	}
-
-    }, [waitingToReconnect])
-
+            return () => {
+                console.log("Cleanup ws leaderboard");
+                ws.close();
+                wsRef.current = null;
+            };
+        }
+    }, [waitingToReconnect]);
 
     const mapFunc = (player: Player, index: number): React.ReactNode => (
-	<TableRow index={index} key={player.Name+player.Score}>
-	    <TableData>{player.Name}</TableData>
-	    <TableData>{player.Score}</TableData>
-	</TableRow>
-    )
+        <TableRow index={index} key={player.Name + player.Score}>
+            <TableData>{player.Name}</TableData>
+            <TableData>{player.Score}</TableData>
+        </TableRow>
+    );
 
-    return (
-	wsRef.current ? 
-	    <GameContent
-		title="Leaderboard"
-		headers={["Name", "Score"]}
-		content={players}
-		mapFunc={mapFunc} 
-	    /> : 
-	    <p>Not connected to server</p>
-    )
-}
+    return wsRef.current ? (
+        <GameContent
+            title="Leaderboard"
+            headers={["Name", "Score"]}
+            content={players}
+            mapFunc={mapFunc}
+        />
+    ) : (
+        <p>Not connected to server</p>
+    );
+};
 
 export default Leaderboard;

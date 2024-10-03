@@ -7,13 +7,13 @@ import (
 )
 
 func Server() *http.Server {
-    router := router.Router()
-    middlewareStack := middleware.Stack()
+	router := router.Router()
+	middlewareStack := middleware.Stack()
 
-    server := http.Server {
-	Addr: ":8080",
-	Handler: middlewareStack(router),
-    }
+	server := http.Server{
+		Addr:    ":8080",
+		Handler: middlewareStack(router),
+	}
 
-    return &server
+	return &server
 }

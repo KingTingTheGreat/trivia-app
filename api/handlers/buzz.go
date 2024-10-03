@@ -50,7 +50,7 @@ func websocketHandler(conn *websocket.Conn, token string, player shared.Player) 
 	// first message is used to verify player, not buzz in
 	_, p, err := conn.ReadMessage()
 	if err != nil {
-		log.Println("could not write to websocket")
+		log.Println("could not read from websocket")
 		return
 	}
 	name := string(p)
@@ -76,7 +76,7 @@ func websocketHandler(conn *websocket.Conn, token string, player shared.Player) 
 	for {
 		_, p, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("websocket error", player.Name)
+			log.Println("websocket reading error", player.Name, err.Error())
 			break
 		}
 		name := string(p)

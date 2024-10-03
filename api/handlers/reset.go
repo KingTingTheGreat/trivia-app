@@ -7,14 +7,14 @@ import (
 )
 
 func Reset(w http.ResponseWriter, r *http.Request) {
-    log.Println("reset buzzers")
-    // assume authorized bc middleware 
-    shared.PlayerStore.ResetBuzzers()
+	log.Println("reset buzzers")
+	// assume authorized bc middleware
+	shared.PlayerStore.ResetBuzzers()
 
-    go func() {
-	shared.BuzzedInChan <- true
-    }()
+	go func() {
+		shared.BuzzedInChan <- true
+	}()
 
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte("success"))
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("success"))
 }
