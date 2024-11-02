@@ -60,7 +60,7 @@ const Leaderboard = () => {
                     return;
                 }
 
-                console.log("ws leaderboard closed");
+                // console.log("ws leaderboard closed");
 
                 setWaitingToReconnect(true);
 
@@ -68,7 +68,7 @@ const Leaderboard = () => {
             };
 
             ws.onmessage = (e) => {
-                console.log("ws leaderboard received", e);
+                // console.log("ws leaderboard received", e);
                 const d = JSON.parse(e.data) ?? [];
                 setPlayers(d);
                 console.log(d);

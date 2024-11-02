@@ -5,6 +5,7 @@ import { Player } from "@/types";
 
 const BuzzedIn = () => {
     const [players, setPlayers] = useState<Player[]>([]);
+    const maxLen = useRef(0);
     const wsRef = useRef<WebSocket | null>(null);
     const [waitingToReconnect, setWaitingToReconnect] = useState(false);
     const buzzer = useRef<HTMLAudioElement | null>(null);
@@ -42,7 +43,7 @@ const BuzzedIn = () => {
                     return;
                 }
 
-                console.log("ws buzzed in closed");
+                // console.log("ws buzzed in closed");
 
                 setWaitingToReconnect(true);
 
@@ -50,8 +51,14 @@ const BuzzedIn = () => {
             };
 
             ws.onmessage = (e) => {
-                console.log("ws buzzed in received", e);
+                // console.log("ws buzzed in received", e);
                 const d = JSON.parse(e.data) ?? [];
+                if (d.length > maxLen.current) {
+                    buzzer.current?.play();
+                    maxLen.current = d.length;
+                } else if (d.length === 0) {
+                    maxLen.current = 0;
+                }
                 setPlayers(d);
                 console.log(d);
             };
@@ -63,12 +70,6 @@ const BuzzedIn = () => {
             };
         }
     }, [waitingToReconnect]);
-
-    useEffect(() => {
-        if (players.length > 0) {
-            buzzer.current?.play();
-        }
-    }, [players]);
 
     const mapFunc = (player: Player, index: number): React.ReactNode => (
         <TableRow index={index} key={player.Name + player.Time}>
