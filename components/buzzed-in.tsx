@@ -55,10 +55,8 @@ const BuzzedIn = () => {
                 const d = JSON.parse(e.data) ?? [];
                 if (d.length > maxLen.current) {
                     buzzer.current?.play();
-                    maxLen.current = d.length;
-                } else if (d.length === 0) {
-                    maxLen.current = 0;
                 }
+                maxLen.current = d.length;
                 setPlayers(d);
                 console.log(d);
             };
