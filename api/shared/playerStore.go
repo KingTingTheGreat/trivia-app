@@ -127,6 +127,8 @@ func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error
 	if playerUpdates.Websocket != nil {
 		player.Websocket = playerUpdates.Websocket
 	}
+
+	player.LastUpdate = time.Now()
 	ps.playerData[token] = player
 
 	return nil
