@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "next-dev": "next dev",
-        "dev": "concurrently \"next dev\" \"~/go/bin/air || air\"",
+        "dev": "concurrently \"next dev\" \"air\"",
         "build": "go build && next build",
         "start": "concurrently \"./trivia-app\" \"next start\"",
         "lint": "next lint"

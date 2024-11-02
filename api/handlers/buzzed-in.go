@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"trivia-app/api/dlog"
 	"trivia-app/api/shared"
 )
 
@@ -17,7 +18,7 @@ type buzzedInPlayer struct {
 func BuzzedIn(w http.ResponseWriter, r *http.Request) {
 	conn, err := shared.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("error upgrading buzzed in connection")
+		dlog.DLog("error upgrading buzzed in connection")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -47,24 +48,24 @@ func makeBuzzedIn() []buzzedInPlayer {
 	for _, player := range playerList {
 		// filter out players who have not buzzed in
 		if player.BuzzedIn.IsZero() {
-			log.Println("skiping buzz")
+			// dlog.DLog("skiping buzz")
 			continue // could probably break loop instead
 		}
-		log.Println("writing buzz")
+		dlog.DLog("writing buzz")
 		buzzedIn = append(buzzedIn, buzzedInPlayer{
 			Name: player.Name,
-			Time: player.BuzzedIn.Format("03:04:05.000 PM"),
+			Time: player.BuzzedIn.Format("03:04:05.000000 PM"),
 		})
 	}
 
-	log.Println(buzzedIn)
+	// dlog.DLog(buzzedIn)
 
 	return buzzedIn
 }
 
 func BroadcastBuzzedIn() {
 	for range shared.BuzzedInChan {
-		log.Println("buzzed in chan")
+		dlog.DLog("buzzed in chan")
 		buzzedIn := makeBuzzedIn()
 		buzzedInWS.WriteToAll(buzzedIn)
 	}

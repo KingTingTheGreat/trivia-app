@@ -116,7 +116,7 @@ export default function ControlPage() {
                 <UpdateScore
                     submit={(name, delta) =>
                         fetchAuthEndpoint(
-                            `score?name=${name}&amount=${delta}`,
+                            `player?name=${name}&amount=${delta}`,
                             "PUT"
                         )
                     }

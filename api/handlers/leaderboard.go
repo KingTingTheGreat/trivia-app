@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"sort"
+	"time"
+	"trivia-app/api/dlog"
 	"trivia-app/api/shared"
 )
 
@@ -15,13 +16,15 @@ type leaderboardPlayer struct {
 }
 
 func Leaderboard(w http.ResponseWriter, r *http.Request) {
+	dlog.DLog("leaderboard handler")
 	conn, err := shared.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("error upgrading leaderboard connection")
+		dlog.DLog("error upgrading leaderboard connection")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	dlog.DLog("writing to leaderboard conn")
 	conn.WriteJSON(makeLeaderboard())
 	leaderboardWS.InsertConn(conn)
 
@@ -56,6 +59,14 @@ func makeLeaderboard() []leaderboardPlayer {
 
 func BroadcastLeaderboard() {
 	for range shared.LeaderboardChan {
+		now := time.Now()
+		for time.Since(now) < 50*time.Millisecond {
+			select {
+			case <-shared.LeaderboardChan:
+			default:
+				break
+			}
+		}
 		leaderboard := makeLeaderboard()
 		leaderboardWS.WriteToAll(leaderboard)
 	}

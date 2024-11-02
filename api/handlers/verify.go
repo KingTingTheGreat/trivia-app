@@ -9,23 +9,21 @@ import (
 func Verify(w http.ResponseWriter, r *http.Request) {
 	token, err := util.ReadToken(r)
 	if err != nil {
-		util.UserInputError(w, "no cookie")
+		util.InputError(w, util.NO_COOKIE)
 		return
 	}
 
 	name := r.URL.Query().Get("name")
 	if name == "" {
-		util.UserInputError(w, "no name")
+		util.InputError(w, util.NO_NAME)
 		return
 	}
 
 	verified := shared.PlayerStore.VerifyTokenName(token, name)
 
 	if !verified {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("failure"))
+		util.InputError(w, util.INVALID_TOKEN)
 	} else {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("success"))
+		util.Success(w)
 	}
 }

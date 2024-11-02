@@ -17,10 +17,13 @@ const HomeForm = () => {
             .then((msg) => {
                 if (msg == "success") {
                     router.push(`/play/${name}`);
+                } else {
+                    setErrorMessage(msg);
                 }
             })
             .catch((err) => {
                 console.error(err);
+                setErrorMessage(err);
             });
     };
 

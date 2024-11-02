@@ -3,24 +3,29 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
+	"trivia-app/api/dlog"
 	"trivia-app/api/shared"
 	"trivia-app/api/util"
 )
 
 const COOKIE_NAME = "trivia-app-token"
 
+// only allow alphnum, -, _
+var re = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
+
 func GetPlayerName(w http.ResponseWriter, r *http.Request) {
 	token, err := util.ReadToken(r)
 	if err != nil {
-		util.UserInputError(w, "no cookie")
+		util.InputError(w, util.NO_COOKIE)
 		return
 	}
 
 	player, ok := shared.PlayerStore.GetPlayer(token)
 	if !ok {
-		util.UserInputError(w, "invalid token")
+		util.InputError(w, util.INVALID_TOKEN)
 		return
 	}
 
@@ -31,8 +36,12 @@ func GetPlayerName(w http.ResponseWriter, r *http.Request) {
 func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	playerName := strings.TrimSpace(r.FormValue("name"))
 	if playerName == "auth" {
-		log.Println("invalid name")
-		util.UserInputError(w, "invalid player name")
+		dlog.DLog("invalid name")
+		util.InputError(w, "invalid player name")
+		return
+	} else if !re.MatchString(playerName) {
+		dlog.DLog("invalid char")
+		util.InputError(w, "name can only contain characters a-Z, 0-9, -, and _")
 		return
 	}
 
@@ -40,90 +49,102 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		// recover previous session
 		if shared.PlayerStore.VerifyTokenName(token, playerName) {
-			log.Println("session recovered")
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("success"))
+			dlog.DLog("SESSION RECOVERED")
+			util.Success(w)
 			return
 		}
 	}
 
 	token, err = shared.PlayerStore.InsertPlayer(playerName)
 	if err != nil {
-		log.Println("repeated name")
-		util.UserInputError(w, err.Error())
+		dlog.DLog("repeated name", err.Error())
+		util.InputError(w, err.Error())
 		return
+	} else {
+		dlog.DLog("NEW PLAYER")
 	}
 
 	go func() {
 		shared.PlayerListChan <- true
 		shared.LeaderboardChan <- true
-		shared.BuzzedInChan <- true
 	}()
 
 	util.WriteToken(w, token)
-	log.Println(w)
+	// dlog.DLog(w)
 
-	log.Println("created new player")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
+	dlog.DLog("created new player")
+	util.Success(w)
 }
 
 func UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 	playerName := r.URL.Query().Get("name")
 	if playerName == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("no name provided"))
+		util.InputError(w, util.NO_NAME)
 		return
 	}
 
 	amountStr := r.URL.Query().Get("amount")
 	if amountStr == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("no amount provided"))
+		util.InputError(w, "no amount provided")
 		return
 	}
 	amount, err := strconv.Atoi(amountStr)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("invalid amount"))
+		util.InputError(w, "invalid amount")
 		return
 	}
 
 	token, ok := shared.PlayerStore.NameToToken(playerName)
 	if !ok {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("player not found"))
+		util.InputError(w, util.NOT_FOUND)
 		return
 	}
 
 	shared.PlayerStore.PutPlayer(token, shared.UpdatePlayer{
 		ScoreDiff: &amount,
 	})
+
+	go func() { shared.LeaderboardChan <- true }()
+
+	util.Success(w)
 }
 
 func RemovePlayer(w http.ResponseWriter, r *http.Request) {
+	dlog.DLog("RemovePlayer()")
 	playerName := r.URL.Query().Get("name")
 	if playerName == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("no name provided"))
+		dlog.DLog("no name")
+		util.InputError(w, util.NO_NAME)
 		return
 	}
 
 	token, ok := shared.PlayerStore.NameToToken(playerName)
 	if !ok {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("player not found"))
+		dlog.DLog("invalid name and token")
+		util.InputError(w, util.NOT_FOUND)
 		return
 	}
 
+	player, ok := shared.PlayerStore.GetPlayer(token)
+	if !ok {
+		dlog.DLog("invalid name and token 2")
+		util.InputError(w, util.NOT_FOUND)
+		return
+	}
+
+	if player.Websocket != nil {
+		player.WsClose <- true
+	}
+
+	dlog.DLog("deleting player")
 	shared.PlayerStore.DeletePlayer(token)
 
+	dlog.DLog("update reader chans")
 	go func() {
 		shared.PlayerListChan <- true
 		shared.BuzzedInChan <- true
 		shared.LeaderboardChan <- true
 	}()
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
+	util.Success(w)
 }

@@ -1,16 +1,19 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
+	"time"
+	"trivia-app/api/dlog"
 	"trivia-app/api/shared"
 	"trivia-app/api/util"
 
 	"github.com/gorilla/websocket"
 )
 
+const READ_DEADLINE = 10
+
 func BuzzWs(w http.ResponseWriter, r *http.Request) {
-	log.Println("web socket")
+	dlog.DLog("web socket")
 	// read cookie
 	token, err := util.ReadToken(r)
 	if err != nil {
@@ -18,44 +21,51 @@ func BuzzWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dlog.DLog(token)
+
 	// player associated with cookie
 	player, ok := shared.PlayerStore.GetPlayer(token)
 	if !ok {
-		log.Println("player does not exist")
+		dlog.DLog("player does not exist")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	dlog.DLog("player exists")
 
+	dlog.DLog("upgrading to websocket")
 	// upgrade to websocket
 	conn, err := shared.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("error upgrading connection to websocket")
-		w.WriteHeader(http.StatusInternalServerError)
+		dlog.DLog("error upgrading connection to websocket")
 		return
 	}
 
+	dlog.DLog("handling created websocket")
 	go websocketHandler(conn, token, player)
 }
 
 func websocketHandler(conn *websocket.Conn, token string, player shared.Player) {
+	dlog.DLog("websocketHandler()")
 	defer func(conn *websocket.Conn) {
-		log.Println("closing websocket", player.Name)
-		shared.PlayerStore.PutPlayer(token, shared.UpdatePlayer{Websocket: nil})
+		dlog.DLog("closing websocket", player.Name)
+		shared.PlayerStore.NilPlayerWS(token)
 		err := conn.Close()
 		if err != nil {
-			log.Println("error closing websocket connection")
+			dlog.DLog("error closing websocket connection")
 		}
 	}(conn)
 
+	dlog.DLog("reading message")
 	// first message is used to verify player, not buzz in
 	_, p, err := conn.ReadMessage()
 	if err != nil {
-		log.Println("could not read from websocket")
+		dlog.DLog("could not read from websocket")
 		return
 	}
 	name := string(p)
+	dlog.DLog("websocket", name)
 	if player.Name != name {
-		log.Println("name and token do not match")
+		dlog.DLog("name and token do not match")
 		return
 	}
 
@@ -64,29 +74,57 @@ func websocketHandler(conn *websocket.Conn, token string, player shared.Player) 
 
 	// update client-side with correct button state
 	if player.ButtonReady {
-		log.Println(player.Name, "ready")
+		dlog.DLog(player.Name, "ready")
 		conn.WriteMessage(websocket.TextMessage, []byte("ready"))
 	} else {
-		log.Println(player.Name, "buzz")
+		dlog.DLog(player.Name, "buzz")
 		conn.WriteMessage(websocket.TextMessage, []byte("buzz"))
 	}
 
 	go func() { shared.LeaderboardChan <- true }()
 
-	for {
-		_, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("websocket reading error", player.Name, err.Error())
-			break
+	killChan := make(chan bool)
+	readFunc := func() {
+		defer func() { dlog.DLog("ending readFunc", player.Name) }()
+		conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
+		for {
+			select {
+			case <-killChan:
+				return
+			default:
+				dlog.DLog("buzz ws loop")
+
+				// await message from client
+				_, p, err := conn.ReadMessage()
+				if err != nil {
+					dlog.DLog("websocket reading error", player.Name, err.Error())
+					return
+				}
+				msg := string(p)
+				dlog.DLog("websocket message:", name, msg)
+
+				if msg == "\x1F" {
+					// ping-pong
+					dlog.DLog(name, "keeping websocket alive")
+					conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
+				} else if msg == name && shared.PlayerStore.BuzzIn(token, msg) {
+					// buzz in
+					dlog.DLog(name, "buzzed in")
+					conn.WriteMessage(websocket.TextMessage, []byte("buzz"))
+					go func() { shared.BuzzedInChan <- true }()
+				} else {
+					dlog.DLog(name, "failed to buzz")
+				}
+			}
 		}
-		name := string(p)
-		log.Println("websocket message:", name)
-		if shared.PlayerStore.BuzzIn(token, name) {
-			log.Println(name, "buzzed in")
-			conn.WriteMessage(websocket.TextMessage, []byte("buzz"))
-			go func() { shared.BuzzedInChan <- true }()
-		} else {
-			log.Println(name, "failed to buzz")
-		}
+	}
+
+	go readFunc()
+
+	select {
+	case b := <-player.WsClose:
+		killChan <- b
+	case <-killChan:
+		return
 	}
 }

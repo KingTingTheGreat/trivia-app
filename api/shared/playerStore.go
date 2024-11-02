@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"trivia-app/api/dlog"
 
 	"github.com/gorilla/websocket"
 )
@@ -30,6 +31,7 @@ type Player struct {
 	LastUpdate       time.Time
 	BuzzedIn         time.Time
 	Websocket        *websocket.Conn
+	WsClose          chan bool
 }
 
 type UpdatePlayer struct {
@@ -69,7 +71,8 @@ func (ps *playerStore) InsertPlayer(playerName string) (string, error) {
 	defer ps.mu.Unlock()
 
 	if ps.playerNames[cleanName] != "" {
-		return "", errors.New("name already in use")
+		dlog.DLog(ps.playerData[ps.playerNames[cleanName]])
+		return "", errors.New("a player with this name already exists")
 	}
 
 	token := generateToken()
@@ -86,10 +89,13 @@ func (ps *playerStore) InsertPlayer(playerName string) (string, error) {
 		LastUpdate:       time.Now(),
 		BuzzedIn:         time.Time{},
 		Websocket:        nil,
+		WsClose:          make(chan bool, 1),
 	}
 
 	ps.playerData[token] = player
 	ps.playerNames[cleanName] = token
+
+	dlog.DLog("Number of players:", len(ps.playerData))
 	return token, nil
 }
 
@@ -102,6 +108,7 @@ func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error
 	var ok bool
 	// check this player exists
 	if player, ok = ps.playerData[token]; !ok {
+		dlog.DLog("player not found")
 		return errors.New("player not found")
 	}
 
@@ -119,11 +126,26 @@ func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error
 		player.BuzzedIn = *playerUpdates.BuzzedIn
 	}
 	if playerUpdates.Websocket != nil {
-		if player.Websocket != nil {
-			player.Websocket.Close()
-		}
 		player.Websocket = playerUpdates.Websocket
 	}
+	ps.playerData[token] = player
+
+	return nil
+}
+
+func (ps *playerStore) NilPlayerWS(token string) error {
+	ps.mu.Lock()
+	defer ps.mu.Unlock()
+
+	var player Player
+	var ok bool
+	// check this player exists
+	if player, ok = ps.playerData[token]; !ok {
+		dlog.DLog("player not found")
+		return errors.New("player not found")
+	}
+
+	player.Websocket = nil
 	ps.playerData[token] = player
 
 	return nil
@@ -138,7 +160,12 @@ func (ps *playerStore) DeletePlayer(token string) error {
 	if player, ok = ps.playerData[token]; !ok {
 		return errors.New("player not found")
 	}
-	player.Websocket.Close()
+
+	if player.Websocket != nil {
+		player.WsClose <- true
+	}
+
+	dlog.DLog("deleting player from store")
 	delete(ps.playerData, token)
 	delete(ps.playerNames, player.CleanName)
 	return nil
@@ -210,9 +237,12 @@ func (ps *playerStore) VerifyTokenName(token, name string) bool {
 
 func (ps *playerStore) BuzzIn(token, name string) bool {
 	ps.mu.Lock()
-	player := ps.playerData[token]
+	player, ok := ps.playerData[token]
+	if !ok {
+		return false
+	}
 	if !player.BuzzedIn.IsZero() || player.Name != name {
-		log.Println("already buzzed in")
+		dlog.DLog("already buzzed in")
 		return false
 	}
 	ps.mu.Unlock()
@@ -221,7 +251,7 @@ func (ps *playerStore) BuzzIn(token, name string) bool {
 	f := false
 	err := ps.PutPlayer(token, UpdatePlayer{BuzzedIn: &now, ButtonReady: &f})
 	if err != nil {
-		log.Println("failed to buzz into player store")
+		dlog.DLog("failed to buzz into player store")
 		return false
 	}
 
@@ -229,28 +259,28 @@ func (ps *playerStore) BuzzIn(token, name string) bool {
 }
 
 func (ps *playerStore) ResetBuzzers() {
-	log.Println("reseting buzzers")
+	dlog.DLog("reseting buzzers")
 	ps.mu.Lock()
 	defer ps.mu.Unlock()
-	log.Println("got lock")
+	dlog.DLog("got lock")
 
 	for token, player := range ps.playerData {
 		// update vars
 		player.ButtonReady = true
 		player.BuzzedIn = time.Time{}
-		log.Println("reseting buzzer for", player.Name)
+		dlog.DLog("reseting buzzer for", player.Name)
 
 		// send message to websocket/client
 		if player.Websocket != nil {
 			err := player.Websocket.WriteMessage(websocket.TextMessage, []byte("ready"))
 			// FIX THIS ERROR HANDLING. probably causes error with handler
 			if err != nil {
-				log.Println("error reseting buzzer")
+				dlog.DLog("error reseting buzzer")
 				player.Websocket.Close()
 				player.Websocket = nil
 			}
 		} else {
-			log.Println("websocket is nil")
+			dlog.DLog("websocket is nil")
 		}
 
 		ps.playerData[token] = player

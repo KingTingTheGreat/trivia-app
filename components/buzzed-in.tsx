@@ -7,35 +7,11 @@ const BuzzedIn = () => {
     const [players, setPlayers] = useState<Player[]>([]);
     const wsRef = useRef<WebSocket | null>(null);
     const [waitingToReconnect, setWaitingToReconnect] = useState(false);
-    // const [ws, setWs] = useState<WebSocket | null>(null);
-    // const [buzzer, setBuzzer] = useState<HTMLAudioElement | null>(null);
-    const buzzer = useRef(new Audio("/buzzer.mp3"));
+    const buzzer = useRef<HTMLAudioElement | null>(null);
 
-    //    useEffect(() => {
-    // setBuzzer(new Audio("/buzzer.mp3"))
-    //    }, [])
-
-    //    useEffect(() => {
-    // if (ws === null) {
-    //     setWs(new WebSocket("/api/buzzed-in"));
-    //     return;
-    // }
-    // ws.onopen = () => {
-    //     console.log("connected to buzzed in ");
-    // }
-    // ws.onmessage = (e) => {
-    //     console.log("buzzed in", e.data);
-    //     setPlayers(JSON.parse(e.data) ?? [])
-    // }
-    // ws.onclose = () => {
-    //     console.log("disconnected from buzzed-in");
-    //     setPlayers([]);
-    //     setTimeout(() => {
-    // 	setWs(new WebSocket("/api/buzzed-in"));
-    //     }, 100)
-    // }
-    //    }, [ws])
-    //
+    useEffect(() => {
+        buzzer.current = new Audio("/buzzer.mp3");
+    }, []);
 
     useEffect(() => {
         if (waitingToReconnect) {
@@ -70,7 +46,7 @@ const BuzzedIn = () => {
 
                 setWaitingToReconnect(true);
 
-                setTimeout(() => setWaitingToReconnect(false), 500);
+                setTimeout(() => setWaitingToReconnect(false), 100);
             };
 
             ws.onmessage = (e) => {
@@ -90,10 +66,7 @@ const BuzzedIn = () => {
 
     useEffect(() => {
         if (players.length > 0) {
-            // alert(`play ${players} ${players.length}`)
-            if (false) buzzer.current.play();
-            // buzzer.current.play()
-            // buzzer?.play();
+            buzzer.current?.play();
         }
     }, [players]);
 

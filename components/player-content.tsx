@@ -31,6 +31,16 @@ const PlayerContent = () => {
     //     router.push("/");
     // }
     //    }, [ws])
+    //
+    function pongFunc(ws: WebSocket) {
+        try {
+            ws.send("\x1F");
+        } catch {
+            return;
+        }
+        // recurse after 20 seconds
+        setTimeout(() => pongFunc(ws), 5000);
+    }
 
     useEffect(() => {
         if (!wsRef.current) {
@@ -43,6 +53,7 @@ const PlayerContent = () => {
             ws.onopen = () => {
                 console.log("ws buzz opened, writing");
                 ws.send(name);
+                pongFunc(ws);
             };
 
             ws.onclose = () => {
@@ -52,7 +63,11 @@ const PlayerContent = () => {
 
             ws.onmessage = (e) => {
                 console.log(e.data);
-                setButtonReady(e.data == "ready");
+                if (e.data == "ready") {
+                    setButtonReady(true);
+                } else if (e.data == "buzz") {
+                    setButtonReady(false);
+                }
             };
 
             // return () => {
@@ -66,10 +81,11 @@ const PlayerContent = () => {
     return (
         <main className="flex flex-col items-center justify-center h-screen bg-blue-200">
             <h1 className="p-2 m-4 text-4xl">
-                Welcome{" "}
+                Hi{" "}
                 <span className="underline" id="name">
                     {name}
                 </span>
+                !
             </h1>
             <button
                 onClick={() => {

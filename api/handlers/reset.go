@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
+	"trivia-app/api/dlog"
 	"trivia-app/api/shared"
 )
 
 func Reset(w http.ResponseWriter, r *http.Request) {
-	log.Println("reset buzzers")
+	dlog.DLog("reset buzzers")
 	// assume authorized bc middleware
 	shared.PlayerStore.ResetBuzzers()
 

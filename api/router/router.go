@@ -15,7 +15,6 @@ func Router() *http.ServeMux {
 
 	router.HandleFunc("GET /api/player", handlers.GetPlayerName)
 	router.HandleFunc("POST /api/player", handlers.PostNewPlayer)
-	router.HandleFunc("PUT /api/player", handlers.UpdatePlayer)
 
 	router.HandleFunc("GET /api/verify", handlers.Verify)
 
@@ -23,7 +22,7 @@ func Router() *http.ServeMux {
 
 	router.HandleFunc("POST /api/auth/reset", handlers.Reset)
 
-	router.HandleFunc("PUT /api/auth/score", handlers.Score)
+	router.HandleFunc("PUT /api/auth/player", handlers.UpdatePlayer)
 	router.HandleFunc("DELETE /api/auth/player", handlers.RemovePlayer)
 
 	router.HandleFunc("/api/leaderboard", handlers.Leaderboard)

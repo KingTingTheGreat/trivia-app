@@ -1,8 +1,8 @@
 package shared
 
 import (
-	"log"
 	"sync"
+	"trivia-app/api/dlog"
 
 	"github.com/gorilla/websocket"
 )
@@ -25,24 +25,24 @@ func (ws *websocketStore) DeleteConn(conn *websocket.Conn) {
 }
 
 func (ws *websocketStore) WriteToAll(data interface{}) {
-	log.Println("write to all")
+	dlog.DLog("write to all")
 	ws.mu.Lock()
 	defer ws.mu.Unlock()
-	log.Println("got lock", len(ws.websocketData))
+	dlog.DLog("got lock", len(ws.websocketData))
 
 	for conn := range ws.websocketData {
-		log.Println("writing to conn")
-		go conn.WriteJSON(data)
+		dlog.DLog("writing to conn")
+		conn.WriteJSON(data)
 	}
 }
 
 func (ws *websocketStore) KeepAlive(conn *websocket.Conn) {
 	defer func(conn *websocket.Conn) {
-		log.Println("closing leaderboard websocket")
+		dlog.DLog("closing leaderboard websocket")
 		ws.DeleteConn(conn)
 		err := conn.Close()
 		if err != nil {
-			log.Println("error closing leaderboard websocket")
+			dlog.DLog("error closing leaderboard websocket")
 		}
 	}(conn)
 

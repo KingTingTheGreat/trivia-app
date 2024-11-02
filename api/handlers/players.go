@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
+	"time"
+	"trivia-app/api/dlog"
 	"trivia-app/api/shared"
 )
 
@@ -16,13 +17,13 @@ type playerListPlayer struct {
 func PlayerList(w http.ResponseWriter, r *http.Request) {
 	conn, err := shared.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Println("error upgrading player list connection")
+		dlog.DLog("error upgrading player list connection")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	a := shared.PlayerStore.AllNamesTokens()
-	log.Println("sending", a)
+	dlog.DLog("sending", a)
 	conn.WriteJSON(shared.PlayerStore.AllNamesTokens())
 	playerListWS.InsertConn(conn)
 
@@ -31,7 +32,15 @@ func PlayerList(w http.ResponseWriter, r *http.Request) {
 
 func BroadcastPlayerList() {
 	for range shared.PlayerListChan {
-		log.Println("player list chan")
+		now := time.Now()
+		for time.Since(now) < 50*time.Millisecond {
+			select {
+			case <-shared.PlayerListChan:
+			default:
+				break
+			}
+		}
+		dlog.DLog("player list chan")
 		playerList := shared.PlayerStore.AllNamesTokens()
 		playerListWS.WriteToAll(playerList)
 	}
