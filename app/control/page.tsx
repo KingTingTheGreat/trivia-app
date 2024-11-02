@@ -1,5 +1,5 @@
 "use client";
-// import QuestionControl from "@/components/question-control";
+import QuestionControl from "@/components/question-control";
 import RemovePlayer from "@/components/remove-player";
 import UpdateScore from "@/components/update-score";
 import { TextField } from "@mui/material";
@@ -122,11 +122,11 @@ export default function ControlPage() {
                     }
                     players={players}
                 />
-                {/*<QuestionControl
+                <QuestionControl
                     reset={() => {
                         fetchAuthEndpoint(`reset`, "POST");
                     }}
-                /> */}
+                />
                 <RemovePlayer
                     remove={(name) =>
                         fetchAuthEndpoint(`player?name=${name}`, "DELETE")

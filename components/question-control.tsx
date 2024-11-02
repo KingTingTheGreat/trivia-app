@@ -9,7 +9,7 @@ const QuestionControl = ({ reset }: { reset: () => void }) => {
     return (
         <div className="flex flex-col items-center m-2 p-3">
             <h4 className="p-1 text-xl text-center">Question Control</h4>
-            <div className="flex w-40 justify-around p-1 m-1">
+            {/*<div className="flex w-40 justify-around p-1 m-1">
                 <Button
                     variant="outlined"
                     onClick={() => {
@@ -26,7 +26,7 @@ const QuestionControl = ({ reset }: { reset: () => void }) => {
                 >
                     Next
                 </Button>
-            </div>
+            </div>*/}
             <Button
                 variant="contained"
                 className="m-1"
