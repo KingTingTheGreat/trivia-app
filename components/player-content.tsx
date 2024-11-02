@@ -76,7 +76,7 @@ const PlayerContent = () => {
             //   wsRef.current = null;
             // };
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <main className="flex flex-col items-center justify-center h-screen bg-blue-200">
