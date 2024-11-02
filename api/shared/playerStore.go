@@ -2,7 +2,6 @@ package shared
 
 import (
 	"errors"
-	"log"
 	"math/rand"
 	"strings"
 	"sync"
