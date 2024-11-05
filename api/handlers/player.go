@@ -13,7 +13,7 @@ import (
 const COOKIE_NAME = "trivia-app-token"
 
 // only allow alphnum, -, _
-var re = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
+var re = regexp.MustCompile("^[a-zA-Z0-9_ -]+$")
 
 func GetPlayerName(w http.ResponseWriter, r *http.Request) {
 	token, err := util.ReadToken(r)
