@@ -29,7 +29,7 @@ const QuestionControl = ({ reset }: { reset: () => void }) => {
             </div>*/}
             <Button
                 variant="contained"
-                className="m-1"
+                sx={{ margin: "0.25rem" }}
                 onClick={() => setModalOpen(true)}
             >
                 Reset Buzzers

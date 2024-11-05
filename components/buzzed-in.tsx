@@ -76,15 +76,14 @@ const BuzzedIn = () => {
         </TableRow>
     );
 
-    return wsRef.current ? (
+    return (
         <GameContent
             title="Buzzed In"
             headers={["Name", "Time"]}
             content={players}
             mapFunc={mapFunc}
+            loading={wsRef.current ? false : true}
         />
-    ) : (
-        <p>Not connected to server</p>
     );
 };
 

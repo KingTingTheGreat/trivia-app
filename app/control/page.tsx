@@ -112,31 +112,39 @@ export default function ControlPage() {
                     {errorMessage}
                 </p>
             </div>
-            <div className="flex flex-col sm:flex-row">
-                <UpdateScore
-                    submit={(name, delta) =>
-                        fetchAuthEndpoint(
-                            `player?name=${name}&amount=${delta}`,
-                            "PUT"
-                        )
-                    }
-                    players={players}
-                />
-                <QuestionControl
-                    reset={() => {
-                        fetchAuthEndpoint(`reset`, "POST");
-                    }}
-                />
-                <RemovePlayer
-                    remove={(name) =>
-                        fetchAuthEndpoint(`player?name=${name}`, "DELETE")
-                    }
-                    players={players}
-                />
+            <div className="flex flex-col sm:flex-row w-full justify-around max-w-[750px]">
+                <div className="flex flex-col items-center p-1 m-1">
+                    <UpdateScore
+                        submit={(name, delta) =>
+                            fetchAuthEndpoint(
+                                `player?name=${name}&amount=${delta}`,
+                                "PUT"
+                            )
+                        }
+                        players={players}
+                    />
+                    <RemovePlayer
+                        remove={(name) =>
+                            fetchAuthEndpoint(`player?name=${name}`, "DELETE")
+                        }
+                        players={players}
+                    />
+                </div>
+                <div className="">
+                    <QuestionControl
+                        reset={() => {
+                            fetchAuthEndpoint(`reset`, "POST");
+                        }}
+                    />
+                </div>
             </div>
-            <div className="flex">
-                <Leaderboard />
-                <BuzzedIn />
+            <div className="flex max-sm:flex-col w-full justify-around max-sm:items-center max-w-[1000px]">
+                <div className="w-1/2">
+                    <Leaderboard />
+                </div>
+                <div className="w-1/2">
+                    <BuzzedIn />
+                </div>
             </div>
         </main>
     );

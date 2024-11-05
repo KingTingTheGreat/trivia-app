@@ -8,27 +8,6 @@ const Leaderboard = () => {
     const wsRef = useRef<WebSocket | null>(null);
     const [waitingToReconnect, setWaitingToReconnect] = useState(false);
 
-    //    useEffect(() => {
-    // if (ws === null) {
-    //     setWs(new WebSocket("/api/leaderboard"));
-    //     return;
-    // }
-    // ws.onopen = () => {
-    //     console.log("connected to leaderboard");
-    // }
-    // ws.onmessage = (e) => {
-    //     console.log("leaderboard", e.data);
-    //     setPlayers(JSON.parse(e.data) ?? []);
-    // }
-    // ws.onclose = () => {
-    //     console.log("disconnected from leaderboard");
-    //     setPlayers([]);
-    //     setTimeout(() => {
-    // 	setWs(new WebSocket("/api/leaderboard"));
-    //     }, 100)
-    // }
-    //    }, [ws])
-
     useEffect(() => {
         if (waitingToReconnect) {
             return;
@@ -89,15 +68,14 @@ const Leaderboard = () => {
         </TableRow>
     );
 
-    return wsRef.current ? (
+    return (
         <GameContent
             title="Leaderboard"
             headers={["Name", "Score"]}
             content={players}
             mapFunc={mapFunc}
+            loading={wsRef.current ? false : true}
         />
-    ) : (
-        <p>Not connected to server</p>
     );
 };
 

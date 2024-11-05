@@ -14,13 +14,13 @@ const UpdateScore = ({
     const [delta, setDelta] = useState("0");
 
     return (
-        <div className="p-2 m-4">
-            <h4 className="p-1 text-xl text-center">Update Player Score</h4>
+        <div className="m-1">
+            <h4 className="p-1 text-xl text-center">Update Score</h4>
             <div className="flex items-center">
                 <Select
                     value={name}
                     label="Player"
-                    className="min-w-32"
+                    sx={{ minWidth: "8rem" }}
                     onChange={(e) => setName(e.target.value)}
                 >
                     <MenuItem value=""></MenuItem>
@@ -34,7 +34,7 @@ const UpdateScore = ({
                     variant="outlined"
                     label="Δ"
                     type="number"
-                    className="w-20"
+                    sx={{ width: "5rem" }}
                     value={delta}
                     onChange={(e) => {
                         setDelta(e.target.value);
@@ -42,7 +42,7 @@ const UpdateScore = ({
                 />
                 <Button
                     variant="contained"
-                    className="p-3 m-2"
+                    sx={{ padding: "0.75rem", margin: "0.5rem" }}
                     onClick={() => {
                         submit(name, delta);
                         setName("");

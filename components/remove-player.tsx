@@ -15,28 +15,30 @@ const RemovePlayer = ({
     const closeModal = () => setModalOpen(false);
 
     return (
-        <div className="flex flex-col">
+        <div className="m-1">
             <h4 className="p-1 text-xl text-center">Remove Player</h4>
-            <Select
-                value={name}
-                label="Player"
-                className="min-w-32"
-                onChange={(e) => setName(e.target.value)}
-            >
-                <MenuItem value=""></MenuItem>
-                {players.map((p) => (
-                    <MenuItem value={p.Name} key={p.Token}>
-                        {p.Name}
-                    </MenuItem>
-                ))}
-            </Select>
-            <Button
-                variant="contained"
-                className="p-3 m-2"
-                onClick={() => setModalOpen(true)}
-            >
-                Remove Player
-            </Button>
+            <div className="flex items-center">
+                <Select
+                    value={name}
+                    label="Player"
+                    sx={{ minWidth: "8rem" }}
+                    onChange={(e) => setName(e.target.value)}
+                >
+                    <MenuItem value=""></MenuItem>
+                    {players.map((p) => (
+                        <MenuItem value={p.Name} key={p.Token}>
+                            {p.Name}
+                        </MenuItem>
+                    ))}
+                </Select>
+                <Button
+                    variant="contained"
+                    sx={{ padding: "0.75rem", margin: "0.5rem" }}
+                    onClick={() => setModalOpen(true)}
+                >
+                    Remove
+                </Button>
+            </div>
             <Modal open={modalOpen} onClose={closeModal}>
                 <div
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
