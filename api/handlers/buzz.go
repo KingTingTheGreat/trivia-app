@@ -88,37 +88,32 @@ func websocketHandler(conn *websocket.Conn, token string, player shared.Player) 
 		defer func() { dlog.DLog("ending readFunc", player.Name) }()
 		conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
 		for {
+			dlog.DLog("buzz ws loop")
+
+			// await message from client
+			_, p, err := conn.ReadMessage()
+			if err != nil {
+				dlog.DLog("websocket reading error", player.Name, err.Error())
+				return
+			}
+			msg := string(p)
+			dlog.DLog("websocket message:", name, msg)
+
 			select {
 			case <-killChan:
 				return
 			default:
-				dlog.DLog("buzz ws loop")
-
-				// await message from client
-				_, p, err := conn.ReadMessage()
-				if err != nil {
-					dlog.DLog("websocket reading error", player.Name, err.Error())
-					return
-				}
-				msg := string(p)
-				dlog.DLog("websocket message:", name, msg)
-
-				select {
-				case <-killChan:
-					return
-				default:
-					if msg == "\x1F" {
-						// ping-pong
-						dlog.DLog(name, "keeping websocket alive")
-						conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
-					} else if msg == name && shared.PlayerStore.BuzzIn(token, msg) {
-						// buzz in
-						dlog.DLog(name, "buzzed in")
-						conn.WriteMessage(websocket.TextMessage, []byte("buzz"))
-						go func() { shared.BuzzedInChan <- true }()
-					} else {
-						dlog.DLog(name, "failed to buzz")
-					}
+				if msg == "\x1F" {
+					// ping-pong
+					dlog.DLog(name, "keeping websocket alive")
+					conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
+				} else if msg == name && shared.PlayerStore.BuzzIn(token, msg) {
+					// buzz in
+					dlog.DLog(name, "buzzed in")
+					conn.WriteMessage(websocket.TextMessage, []byte("buzz"))
+					go func() { shared.BuzzedInChan <- true }()
+				} else {
+					dlog.DLog(name, "failed to buzz")
 				}
 			}
 		}
