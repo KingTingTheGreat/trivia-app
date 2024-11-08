@@ -1,29 +1,28 @@
 # Trivia
 
-A live buzzer to play trivia
+A live buzzer system
 
 ## Setup
 
 ### Backend
 
 - Install [Go version 1.23 or higher](https://go.dev/doc/install)
-- Create a **.env.local** file and add a password; PASSWORD="yourpasswordhere"
 
 ### Frontend
 
 - Install [Node.js](https://nodejs.org/en/download/)
-- Edit **.env.local** file and add your device's ip address; IP="_x.x.x.x_". You can also use the command ```make ip```
 
 ## How to run
 
 - Use the command ```make run```
+  - You will then be prompted to set your password and IP address
 - You can also manually build and run by using the commands ```npm run build``` and ```npm run start```, respectively
 
 ### Host
 
 - Visit _HostIP_:3000/control to access controls
-  - Enter the password you put in your **.env.local** file
-  - Enter a player's name and the number of points you'd like to give them
+  - Enter the configured password
+  - Select a player's name and the number of points you'd like to give them
     - A positive value will add to their score while a negative value will subtract from it. Negative scores are possible.
   - Reset Buzzers will clear the current buzzed in list/state but will not affect anything else
   - Removing a player permanently deletes all of their information
