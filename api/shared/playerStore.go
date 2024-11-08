@@ -52,11 +52,11 @@ func cleanName(name string) string {
 }
 
 // returns existing player data
-func (ps *playerStore) GetPlayer(token string) (Player, bool) {
+func (ps *playerStore) GetPlayer(token string) (*Player, bool) {
 	ps.mu.RLock()
 	player, ok := ps.playerData[token]
 	ps.mu.RUnlock()
-	return player, ok
+	return &player, ok
 }
 
 // creates a new player and returns the token
@@ -173,11 +173,11 @@ func (ps *playerStore) DeletePlayer(token string) error {
 }
 
 // returns a list of all players
-func (ps *playerStore) AllPlayers() []Player {
-	var allPlayers []Player
+func (ps *playerStore) AllPlayers() []*Player {
+	var allPlayers []*Player
 	ps.mu.RLock()
 	for _, player := range ps.playerData {
-		allPlayers = append(allPlayers, player)
+		allPlayers = append(allPlayers, &player)
 	}
 	ps.mu.RUnlock()
 	return allPlayers
@@ -189,11 +189,11 @@ type TokenPlayer struct {
 }
 
 // returns a list of all tokens and their corresponding players
-func (ps *playerStore) AllTokenPlayers() []TokenPlayer {
-	var allPlayers []TokenPlayer
+func (ps *playerStore) AllTokenPlayers() []*TokenPlayer {
+	var allPlayers []*TokenPlayer
 	ps.mu.RLock()
 	for token, player := range ps.playerData {
-		allPlayers = append(allPlayers, TokenPlayer{token, player})
+		allPlayers = append(allPlayers, &TokenPlayer{token, player})
 	}
 	ps.mu.RUnlock()
 	return allPlayers
@@ -205,12 +205,12 @@ type PlayerNameToken struct {
 }
 
 // returns a list of all player names and their corresponding tokens
-func (ps *playerStore) AllNamesTokens() []PlayerNameToken {
+func (ps *playerStore) AllNamesTokens() []*PlayerNameToken {
 	ps.mu.RLock()
-	allNamesTokens := make([]PlayerNameToken, len(ps.playerNames))
+	allNamesTokens := make([]*PlayerNameToken, len(ps.playerNames))
 	i := 0
 	for name, token := range ps.playerNames {
-		allNamesTokens[i] = PlayerNameToken{
+		allNamesTokens[i] = &PlayerNameToken{
 			Name:  name,
 			Token: token,
 		}

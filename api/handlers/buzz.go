@@ -44,7 +44,7 @@ func BuzzWs(w http.ResponseWriter, r *http.Request) {
 	go websocketHandler(conn, token, player)
 }
 
-func websocketHandler(conn *websocket.Conn, token string, player shared.Player) {
+func websocketHandler(conn *websocket.Conn, token string, player *shared.Player) {
 	dlog.DLog("websocketHandler()")
 	defer func(conn *websocket.Conn) {
 		dlog.DLog("closing websocket", player.Name)
