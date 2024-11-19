@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Button, MenuItem, Select } from "@mui/material";
+import { Button, MenuItem, Modal, Select } from "@mui/material";
 import { Player } from "@/types";
 
 const RemovePlayer = ({
@@ -11,6 +11,8 @@ const RemovePlayer = ({
     remove: (token: string) => void;
 }) => {
     const [name, setName] = useState("");
+    const [modalOpen, setModalOpen] = useState(false);
+    const closeModal = () => setModalOpen(false);
 
     return (
         <div className="m-1">
@@ -32,11 +34,39 @@ const RemovePlayer = ({
                 <Button
                     variant="contained"
                     sx={{ padding: "0.75rem", margin: "0.5rem" }}
-                    onClick={() => remove(name)}
+                    onClick={() => setModalOpen(true)}
                 >
                     Remove
                 </Button>
             </div>
+            <Modal open={modalOpen} onClose={closeModal}>
+                <div
+                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+		    w-60 aspect-square bg-white rounded-3xl flex flex-col items-center justify-center"
+                >
+                    <h5 className="text-xl p-1 m-2 text-center">
+                        Delete player:{" "}
+                        <span className="text-[#F00] font-semibold">
+                            {name}
+                        </span>
+                        ? This action is permanent.
+                    </h5>
+                    <div className="w-[60%] flex justify-between">
+                        <Button variant="outlined" onClick={closeModal}>
+                            No
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={() => {
+                                remove(name);
+                                setModalOpen(false);
+                            }}
+                        >
+                            Yes
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 };
