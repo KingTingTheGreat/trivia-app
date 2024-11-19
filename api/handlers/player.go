@@ -75,6 +75,26 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	util.Success(w)
 }
 
+func ClearPlayer(w http.ResponseWriter, r *http.Request) {
+	playerName := r.URL.Query().Get("name")
+	if playerName == "" {
+		util.InputError(w, util.NO_NAME)
+		return
+	}
+
+	token, ok := shared.PlayerStore.NameToToken(playerName)
+	if !ok {
+		util.InputError(w, util.NOT_FOUND)
+		return
+	}
+
+	shared.PlayerStore.ZeroPlayer(token)
+
+	go func() { shared.LeaderboardChan <- true }()
+
+	util.Success(w)
+}
+
 func UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 	playerName := r.URL.Query().Get("name")
 	if playerName == "" {

@@ -5,10 +5,12 @@ import { useState } from "react";
 
 const UpdateScore = ({
     players,
-    submit,
+    update,
+    clear,
 }: {
     players: Player[];
-    submit: (name: string, delta: string) => void;
+    update: (name: string, delta: string) => void;
+    clear: (name: string) => void;
 }) => {
     const [name, setName] = useState("");
     const [delta, setDelta] = useState("0");
@@ -44,12 +46,22 @@ const UpdateScore = ({
                     variant="contained"
                     sx={{ padding: "0.75rem", margin: "0.5rem" }}
                     onClick={() => {
-                        submit(name, delta);
+                        update(name, delta);
                         setName("");
                         setDelta("0");
                     }}
                 >
                     Add to score
+                </Button>
+                <Button
+                    variant="contained"
+                    sx={{ padding: "0.75rem", margin: "0.5rem" }}
+                    onClick={() => {
+                        clear(name);
+                        setName("");
+                    }}
+                >
+                    Clear score
                 </Button>
             </div>
         </div>

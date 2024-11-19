@@ -134,6 +134,26 @@ func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error
 	return nil
 }
 
+// updates an existing player's score to 0
+func (ps *playerStore) ZeroPlayer(token string) error {
+	ps.mu.Lock()
+	defer ps.mu.Unlock()
+
+	var player Player
+	var ok bool
+	// check this player exists
+	if player, ok = ps.playerData[token]; !ok {
+		dlog.DLog("player not found")
+		return errors.New("player not found")
+	}
+
+	player.Score = 0
+	player.LastUpdate = time.Now()
+	ps.playerData[token] = player
+
+	return nil
+}
+
 func (ps *playerStore) NilPlayerWS(token string) error {
 	ps.mu.Lock()
 	defer ps.mu.Unlock()

@@ -116,9 +116,15 @@ export default function ControlPage() {
             <div className="flex flex-col sm:flex-row w-full justify-around max-w-[750px]">
                 <div className="flex flex-col items-center p-1 m-1">
                     <UpdateScore
-                        submit={(name, delta) =>
+                        update={(name, delta) =>
                             fetchAuthEndpoint(
                                 `player?name=${name}&amount=${delta}`,
+                                "PUT"
+                            )
+                        }
+                        clear={(name) =>
+                            fetchAuthEndpoint(
+                                `clear-player?name=${name}`,
                                 "PUT"
                             )
                         }

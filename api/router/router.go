@@ -25,6 +25,7 @@ func Router() *http.ServeMux {
 	router.HandleFunc("POST /api/auth/reset-game", handlers.ResetGame)
 
 	router.HandleFunc("PUT /api/auth/player", handlers.UpdatePlayer)
+	router.HandleFunc("PUT /api/auth/clear-player", handlers.ClearPlayer)
 	router.HandleFunc("DELETE /api/auth/player", handlers.RemovePlayer)
 
 	router.HandleFunc("/api/leaderboard", handlers.Leaderboard)
