@@ -59,6 +59,7 @@ const RemovePlayer = ({
                             variant="contained"
                             onClick={() => {
                                 remove(name);
+                                setName("");
                                 setModalOpen(false);
                             }}
                         >
