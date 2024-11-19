@@ -6,7 +6,7 @@
         "next-dev": "next dev",
         "dev": "concurrently \"next dev\" \"air\"",
         "build": "go build && next build",
-        "start": "concurrently \"./trivia-app\" \"next start\"",
+        "start": "concurrently \"go run main.go\" \"next start\"",
         "lint": "next lint"
     },
     "dependencies": {
