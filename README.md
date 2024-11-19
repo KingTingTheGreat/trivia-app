@@ -16,7 +16,7 @@ A live buzzer system
 
 - Use the command ```make run```
   - You will then be prompted to set your password and IP address
-- You can also manually build and run by using the commands ```npm run build``` and ```npm run start```, respectively
+- You can also manually install dependencies, build, and run by using the commands ```npm install```, ```npm run build```, and ```npm run start```, respectively
 
 ### Host
 
