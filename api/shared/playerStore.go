@@ -288,6 +288,21 @@ func (ps *playerStore) ResetBuzzers() {
 	}
 }
 
+func (ps *playerStore) ResetGame() {
+	dlog.DLog("reseting game")
+	ps.mu.Lock()
+	defer ps.mu.Unlock()
+
+	// close websocket connections
+	for _, player := range ps.playerData {
+		player.WsClose <- true
+	}
+
+	// reset player data and names/tokens
+	ps.playerData = make(map[string]Player)
+	ps.playerNames = make(map[string]string)
+}
+
 var PlayerStore playerStore = playerStore{
 	mu:          sync.RWMutex{},
 	playerData:  make(map[string]Player),

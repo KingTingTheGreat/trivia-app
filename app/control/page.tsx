@@ -7,6 +7,7 @@ import { useRef, useState, useEffect } from "react";
 import { Player } from "@/types";
 import Leaderboard from "@/components/leaderboard";
 import BuzzedIn from "@/components/buzzed-in";
+import ResetGame from "@/components/reset-game";
 
 export default function ControlPage() {
     const [password, setPassword] = useState("");
@@ -145,6 +146,11 @@ export default function ControlPage() {
                 <div className="w-1/2">
                     <BuzzedIn />
                 </div>
+            </div>
+            <div>
+                <ResetGame
+                    submit={() => fetchAuthEndpoint("reset-game", "POST")}
+                />
             </div>
         </main>
     );
