@@ -18,6 +18,8 @@ A live buzzer system
   - You will then be prompted to set your password and IP address
 - You can also manually install dependencies, build, and run by using the commands ```npm install```, ```npm run build```, and ```npm run start```, respectively
 
+## Pages 
+
 ### Host
 
 - Visit _HostIP_:3000/control to access controls
