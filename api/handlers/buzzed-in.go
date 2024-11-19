@@ -53,7 +53,7 @@ func makeBuzzedIn() []buzzedInPlayer {
 		dlog.DLog("writing buzz")
 		buzzedIn = append(buzzedIn, buzzedInPlayer{
 			Name: player.Name,
-			Time: player.BuzzedIn.Format("03:04:05.000000 PM"),
+			Time: player.BuzzedIn.Format("03:04:05.0 PM"),
 		})
 	}
 
