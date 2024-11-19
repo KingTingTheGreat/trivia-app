@@ -49,7 +49,7 @@ const UpdateScore = ({
                         setDelta("0");
                     }}
                 >
-                    Update
+                    Add to score
                 </Button>
             </div>
         </div>
