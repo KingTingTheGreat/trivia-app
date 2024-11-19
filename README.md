@@ -17,10 +17,11 @@ A live buzzer system
 - Use the command ```make run```
   - You will then be prompted to set your password and IP address
 - You can also manually intialize and run
-    1. Manually configre a file called *.env.local* or use the command ```go run init/init.go```
-    2. Install frontend dependencies using the command ```npm install```
-    3. Build the project using the command ```npm run build```
-    4. Finally, run it using the command ```npm run start```
+    1. Manually configure a file called *.env.local* or use the command ```go run init/init.go```
+         - The file should include values of the form ```IP="..."``` and ```PASSWORD="..."```
+    3. Install frontend dependencies using the command ```npm install```
+    4. Build the project using the command ```npm run build```
+    5. Finally, run it using the command ```npm run start```
 
 ## Pages 
 
