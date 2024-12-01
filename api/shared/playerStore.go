@@ -45,6 +45,7 @@ type playerStore struct {
 	mu          sync.RWMutex
 	playerData  map[string]Player
 	playerNames map[string]string
+	startTime   time.Time
 }
 
 func cleanName(name string) string {
@@ -52,11 +53,11 @@ func cleanName(name string) string {
 }
 
 // returns existing player data
-func (ps *playerStore) GetPlayer(token string) (*Player, bool) {
+func (ps *playerStore) GetPlayer(token string) (Player, bool) {
 	ps.mu.RLock()
 	player, ok := ps.playerData[token]
 	ps.mu.RUnlock()
-	return &player, ok
+	return player, ok
 }
 
 // creates a new player and returns the token
@@ -193,14 +194,16 @@ func (ps *playerStore) DeletePlayer(token string) error {
 }
 
 // returns a list of all players
-func (ps *playerStore) AllPlayers() []*Player {
-	var allPlayers []*Player
+func (ps *playerStore) AllPlayers() ([]Player, time.Time) {
 	ps.mu.RLock()
+	defer ps.mu.RUnlock()
+
+	var allPlayers []Player
 	for _, player := range ps.playerData {
-		allPlayers = append(allPlayers, &player)
+		allPlayers = append(allPlayers, player)
 	}
-	ps.mu.RUnlock()
-	return allPlayers
+
+	return allPlayers, ps.startTime
 }
 
 type TokenPlayer struct {
@@ -306,6 +309,8 @@ func (ps *playerStore) ResetBuzzers() {
 
 		ps.playerData[token] = player
 	}
+
+	ps.startTime = time.Now()
 }
 
 func (ps *playerStore) ResetGame() {
@@ -321,10 +326,12 @@ func (ps *playerStore) ResetGame() {
 	// reset player data and names/tokens
 	ps.playerData = make(map[string]Player)
 	ps.playerNames = make(map[string]string)
+	ps.startTime = time.Now()
 }
 
 var PlayerStore playerStore = playerStore{
 	mu:          sync.RWMutex{},
 	playerData:  make(map[string]Player),
 	playerNames: make(map[string]string),
+	startTime:   time.Now(),
 }

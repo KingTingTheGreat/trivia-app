@@ -32,7 +32,7 @@ func Leaderboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func makeLeaderboard() []leaderboardPlayer {
-	playerList := shared.PlayerStore.AllPlayers()
+	playerList, _ := shared.PlayerStore.AllPlayers()
 
 	// sort by score, then last updated, then name
 	sort.Slice(playerList, func(i, j int) bool {

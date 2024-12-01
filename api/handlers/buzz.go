@@ -41,7 +41,7 @@ func BuzzWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dlog.DLog("handling created websocket")
-	go websocketHandler(conn, token, player)
+	go websocketHandler(conn, token, &player)
 }
 
 func websocketHandler(conn *websocket.Conn, token string, player *shared.Player) {

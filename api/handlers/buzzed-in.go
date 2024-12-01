@@ -29,7 +29,7 @@ func BuzzedIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func makeBuzzedIn() []buzzedInPlayer {
-	playerList := shared.PlayerStore.AllPlayers()
+	playerList, startTime := shared.PlayerStore.AllPlayers()
 
 	// sort by buzz in time, then score, then name
 	sort.Slice(playerList, func(i, j int) bool {
@@ -51,9 +51,11 @@ func makeBuzzedIn() []buzzedInPlayer {
 			continue // could probably break loop instead
 		}
 		dlog.DLog("writing buzz")
+		// x := startTime.Sub(player.BuzzedIn).String()
+		// .Format("03:04:05.0 PM"),
 		buzzedIn = append(buzzedIn, buzzedInPlayer{
 			Name: player.Name,
-			Time: player.BuzzedIn.Format("03:04:05.0 PM"),
+			Time: player.BuzzedIn.Sub(startTime).String(),
 		})
 	}
 
