@@ -260,10 +260,12 @@ func (ps *playerStore) BuzzIn(token, name string) bool {
 	ps.mu.Lock()
 	player, ok := ps.playerData[token]
 	if !ok {
+		ps.mu.Unlock()
 		return false
 	}
 	if !player.BuzzedIn.IsZero() || player.Name != name {
 		dlog.DLog("already buzzed in")
+		ps.mu.Unlock()
 		return false
 	}
 	ps.mu.Unlock()
