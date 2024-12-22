@@ -125,6 +125,9 @@ func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error
 		player.BuzzedIn = *playerUpdates.BuzzedIn
 	}
 	if playerUpdates.Websocket != nil {
+		if player.Websocket != nil {
+			player.WsClose <- true
+		}
 		player.Websocket = playerUpdates.Websocket
 	}
 
