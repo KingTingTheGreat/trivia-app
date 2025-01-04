@@ -2,9 +2,12 @@
 <div
   hx-ext="ws"
   ws-connect="{{ .Endpoint }}"
-  hx-target="{{.TableId}}"
+  hx-target="{{.TableId}}-table"
   hx-swap="outerHTML"
 >
-  <div id="{{.TableId}}">{{ block "loading-spinner" . }}{{ end }}</div>
+  <div id="{{.TableId}}" class="flex flex-col items-center">
+    <h2 class="text-5xl max-sm:text-3xl font-semibold p-2 m-1">{{ .Title }}</h2>
+    <div id="{{.TableId}}-table">{{ block "loading-spinner" . }}{{ end }}</div>
+  </div>
 </div>
 {{ end }}
