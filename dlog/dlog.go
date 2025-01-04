@@ -2,7 +2,7 @@ package dlog
 
 import "log"
 
-const DEBUG = true
+const DEBUG = false
 
 func DLog(v ...interface{}) {
 	if DEBUG {
