@@ -1,0 +1,30 @@
+{{ define "content" }}
+<main class="flex flex-col items-center justify-center h-screen">
+  <h1 class="text-2xl font-semibold m-4">Enter your name:</h1>
+  <form
+    class="w-fit flex justify-center items-center m-2"
+    action="/player"
+    method="POST"
+  >
+    <input
+      type="text"
+      value="{{.Name}}"
+      placeholder="Name"
+      name="name"
+      class="border-[1px] border-gray-400 rounded-lg p-4"
+      required
+    />
+    <button
+      class="p-4 m-2 text-4xl aspect-square text-center flex flex-col justify-center rounded-lg bg-green-300"
+      type="submit"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+        <path
+          d="M11.293 4.707 17.586 11H4v2h13.586l-6.293 6.293 1.414 1.414L21.414 12l-8.707-8.707-1.414 1.414z"
+        ></path>
+      </svg>
+    </button>
+  </form>
+  {{ block "error-message" . }}{{ end }}
+</main>
+{{ end }}

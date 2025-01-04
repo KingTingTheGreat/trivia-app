@@ -1,0 +1,68 @@
+{{ define "control-form" }}
+<div class="flex flex-col sm:flex-row w-full justify-around max-w-[750px]">
+  <form id="control-form">
+    <label for="password">Enter Password:</label>
+    <input
+      type="password"
+      id="password"
+      name="password"
+      placeholder="Password"
+      required
+      class="border-2"
+    />
+    {{ block "error-message" . }}{{ end }}
+
+    <div class="p-2 m-6 flex items-start">
+      <div class="flex items-center">
+        {{ block "playerlist-dropdown-ws" . }}{{ end }}
+        <input
+          id="amount"
+          name="amount"
+          type="number"
+          class="w-20 p-2.5 border-2 text-sm ml-2"
+          placeholder="Δ"
+        />
+      </div>
+      <div class="flex flex-col mx-2">
+        <button
+          onclick="event.preventDefault(); updatePlayer();"
+          class="text-sm text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 me-2 mb-2"
+        >
+          Add To Score
+        </button>
+        <button
+          hx-swap="none"
+          onclick="event.preventDefault(); clearPlayer();"
+          class="text-sm text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 rounded-lg px-5 py-2.5 me-2 mb-2"
+        >
+          Clear Score
+        </button>
+        <button
+          hx-delete="/auth/player"
+          hx-confirm="Are you sure you want to delete this player? This action is permanent."
+          hx-swap="none"
+          onclick="event.preventDefault(); removePlayer();"
+          class="text-sm text-white bg-red-700 hover:bg-red-800 rounded-lg px-5 py-2.5 me-2 mb-2"
+        >
+          Remove Player
+        </button>
+      </div>
+    </div>
+
+    <div class="p-2 m-6">
+      <button
+        onclick="event.preventDefault(); resetBuzzers()"
+        class="text-sm text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 me-2 mb-2"
+      >
+        Reset Buzzers
+      </button>
+      <button
+        onclick="event.preventDefault(); resetGame()"
+        class="text-sm text-white bg-red-700 hover:bg-red-800 rounded-lg px-5 py-2.5 me-2 mb-2"
+      >
+        Reset Game
+      </button>
+    </div>
+  </form>
+</div>
+{{ end }}

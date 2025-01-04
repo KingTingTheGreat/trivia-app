@@ -1,0 +1,12 @@
+{{ define "playerlist-dropdown" }}
+<select
+  id="playerlist-dropdown"
+  class="min-w-32 p-2.5 border-2 bg-white"
+  name="name"
+>
+  <option value="">Select Player</option>
+  {{ range $i, $playerName := .PlayerList }}
+  <option value="{{$playerName}}">{{ $playerName }}</option>
+  {{ end }}
+</select>
+{{ end }}

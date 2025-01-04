@@ -1,0 +1,22 @@
+{{ define "content" }}
+<main
+  class="w-screen max-height-screen h-screen flex justify-center items-center"
+>
+  <div class="flex flex-col justify-center items-center text-center">
+    <h1 class="text-4xl font-semibold m-4 p-1">
+      Scan the QR code to join the game
+    </h1>
+    <img
+      src="/public/qrcode.png"
+      alt="{{ .QRCode }}"
+      style="height: auto; max-width: 60%; width: 60%"
+    />
+    <p class="p-1 text-2xl">
+      Or go to
+      <a href="{{ .URL }}" target="_blank" class="underline text-blue-600">
+        {{ .URL }}
+      </a>
+    </p>
+  </div>
+</main>
+{{ end }}

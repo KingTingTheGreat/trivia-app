@@ -1,0 +1,16 @@
+{{ define "content" }}
+<main
+  class="flex flex-col items-center justify-center h-screen bg-blue-200"
+  hx-ext="ws"
+  ws-connect="/buzz"
+  ws-send="{{.Name}}"
+  hx-target="target"
+  hx-swap="innerHTML"
+>
+  <h1 class="p-2 m-4 text-4xl">Hi {{ .Name }}!</h1>
+  <form ws-send>
+    <input name="name" value="{{.Name}}" hidden />
+    <div id="target">{{ block "buzz-button" . }}{{ end }}</div>
+  </form>
+</main>
+{{ end }}

@@ -1,0 +1,30 @@
+{{ define "layout" }}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trivia App</title>
+    <link rel="icon" type="image/x-icon" href="/public/icon.jpg" />
+    <link href="/public/output.css" rel="stylesheet" />
+    <script src="/public/htmx.js"></script>
+    <script src="/public/htmx-ws.js"></script>
+    <!-- <script -->
+    <!--   src="https://unpkg.com/htmx.org@2.0.4" -->
+    <!--   integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" -->
+    <!--   crossorigin="anonymous" -->
+    <!-- ></script> -->
+    <!-- <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script> -->
+  </head>
+
+  <body>
+    {{block "content" .}}{{ end }}
+    <script src="/public/play-ws.js"></script>
+    <script src="/public/table-ws.js"></script>
+    <script src="/public/buzzer.js"></script>
+    <script src="/public/error.js"></script>
+    <script src="/public/htmx-redirect.js"></script>
+    <script src="/public/control.js"></script>
+  </body>
+  {{ end }}
+</html>

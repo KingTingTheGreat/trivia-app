@@ -1,0 +1,25 @@
+{{ define "table-body" }}
+<div id="{{.TableId}}" class="flex flex-col items-center">
+  <h2 class="text-5xl max-sm:text-3xl font-semibold p-2 m-1">{{ .Title }}</h2>
+  <table class="border-collapse">
+    <thead>
+      <tr>
+        {{ range $i, $header := .Headers }}
+        <th class="px-6 py-2 border-solid border-2 text-xl">{{ $header }}</th>
+        {{end}}
+      </tr>
+    </thead>
+    <tbody>
+      {{ range $i, $r := .RowData }}
+      <tr class="border-2">
+        {{ range $j, $d := $r }}
+        <td class="text-center py-2 px-4 border-2 text-lg font-medium">
+          {{ $d }}
+        </td>
+        {{ end }}
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+{{ end }}

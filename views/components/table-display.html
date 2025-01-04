@@ -1,0 +1,10 @@
+{{ define "table-display" }}
+<div
+  hx-ext="ws"
+  ws-connect="{{ .Endpoint }}"
+  hx-target="{{.TableId}}"
+  hx-swap="outerHTML"
+>
+  <div id="{{.TableId}}">{{ block "loading-spinner" . }}{{ end }}</div>
+</div>
+{{ end }}
