@@ -29,13 +29,13 @@ A live buzzer system
   - Reset Buzzers will clear the current buzzed in list/state but will not affect anything else
   - Removing a player permanently deletes all of their information
   - Reset Game will permanently delete all players and all of their information
-- Visit and display the _HostIP:8080/join page to display a QR codes for players to easily access the website
+- Visit and display the _HostIP_:8080/join page to display a QR codes for players to easily access the website
 
 ### Players
 
-- Visit _HostIP_:8080 while on the same network or scan the QR code on the /join page
-- Enter your name and advance to the next page
-- You will now see a buzzer, clicking it will buzz you in
+1. Visit _HostIP_:8080 while on the same network or scan the QR code on the /join page
+2. Enter your name and advance to the next page
+3. You will now see a buzzer, clicking it will buzz you in
 
 ### Additional Pages
 
