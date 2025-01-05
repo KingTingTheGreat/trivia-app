@@ -309,7 +309,7 @@ func (ps *playerStore) BuzzIn(token, name string) bool {
 
 	now := time.Now()
 	f := false
-	err := ps.PutPlayer(token, UpdatePlayer{BuzzedIn: &now, ButtonReady: &f})
+	_, err := ps.PutPlayer(token, UpdatePlayer{BuzzedIn: &now, ButtonReady: &f})
 	if err != nil {
 		dlog.DLog("failed to buzz into player store")
 		return false
