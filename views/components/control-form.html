@@ -8,7 +8,7 @@
       name="password"
       placeholder="Password"
       required
-      class="border-2"
+      class="border-2 p-1"
     />
     {{ block "error-message" . }}{{ end }}
 
@@ -49,16 +49,16 @@
       </div>
     </div>
 
-    <div class="p-2 m-6">
+    <div class="p-2 m-6 flex flex-col items-center">
       <button
         onclick="event.preventDefault(); resetBuzzers()"
-        class="text-sm text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 me-2 mb-2"
+        class="text-sm text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 me-2 mb-2 w-40"
       >
         Reset Buzzers
       </button>
       <button
         onclick="event.preventDefault(); resetGame()"
-        class="text-sm text-white bg-red-700 hover:bg-red-800 rounded-lg px-5 py-2.5 me-2 mb-2"
+        class="text-sm text-white bg-red-700 hover:bg-red-800 rounded-lg px-5 py-2.5 me-2 mb-2 w-40"
       >
         Reset Game
       </button>
