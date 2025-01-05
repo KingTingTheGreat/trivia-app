@@ -38,7 +38,7 @@ if (
   });
 
   document.addEventListener("htmx:wsAfterMessage", (e) => {
-    console.log("new message from websocket", e.detail.message);
+    // console.log("new message from websocket", e.detail.message);
   });
 
   document.addEventListener("htmx:wsClose", (e) => {

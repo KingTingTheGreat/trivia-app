@@ -65,7 +65,13 @@ const clearPlayer = () => {
 
 const removePlayer = () => {
   const selectedPlayer = getSelectedPlayer();
-  fetchAuthEndpoint(`player?name=${selectedPlayer}`, "DELETE");
+  if (
+    confirm(
+      "Are you sure you want to delete this player? This action is permanent.",
+    )
+  ) {
+    fetchAuthEndpoint(`player?name=${selectedPlayer}`, "DELETE");
+  }
 };
 
 const resetBuzzers = () => {
