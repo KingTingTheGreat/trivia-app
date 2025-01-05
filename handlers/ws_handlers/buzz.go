@@ -45,9 +45,7 @@ func BuzzWS(w http.ResponseWriter, r *http.Request) {
 	dlog.DLog(token)
 
 	// player associated with cookie
-	dlog.DLog("before get player")
 	player, ok := shared.PlayerStore.GetPlayer(token)
-	dlog.DLog("after get player")
 	if !ok {
 		dlog.DLog("player does not exist")
 		util.RedirectError(w, r, "player does not exist")
@@ -65,10 +63,11 @@ func BuzzWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dlog.DLog("handling created websocket")
-	go websocketHandler(conn, token, &player)
+	websocketHandler(conn, token, &player)
 }
 
-func websocketHandler(conn *websocket.Conn, token string, player *shared.Player) {
+func websocketHandler(conn *websocket.Conn, token string, playerRef *shared.Player) {
+	player := *playerRef
 	dlog.DLog("websocketHandler()")
 	defer func(conn *websocket.Conn) {
 		dlog.DLog("closing websocket", player.Name)
@@ -101,7 +100,15 @@ func websocketHandler(conn *websocket.Conn, token string, player *shared.Player)
 	}
 
 	// update player store entry with websocket
-	shared.PlayerStore.PutPlayer(token, shared.UpdatePlayer{Websocket: conn})
+	player, err = shared.PlayerStore.PutPlayer(token, shared.UpdatePlayer{Websocket: conn})
+	if err != nil {
+		dlog.DLog("race condition!!!")
+		return
+	}
+
+	var buf bytes.Buffer
+	handlers.RenderComponent(&buf, "buzz-button.html", handlers.Play{Ready: player.ButtonReady})
+	conn.WriteMessage(websocket.TextMessage, buf.Bytes())
 
 	go func() { shared.LeaderboardChan <- true }()
 
@@ -134,7 +141,6 @@ func websocketHandler(conn *websocket.Conn, token string, player *shared.Player)
 			} else if msg == name && shared.PlayerStore.BuzzIn(token, msg) {
 				// buzz in
 				dlog.DLog(name, "buzzed in")
-				var buf bytes.Buffer
 				handlers.RenderComponent(&buf, "buzz-button.html", handlers.Play{Ready: false})
 				conn.WriteMessage(websocket.TextMessage, buf.Bytes())
 

@@ -10,7 +10,14 @@
   <h1 class="p-2 m-4 text-4xl">Hi {{ .Name }}!</h1>
   <form ws-send>
     <input name="name" value="{{.Name}}" hidden />
-    <div id="target">{{ block "buzz-button" . }}{{ end }}</div>
+    <div id="target">
+      <div
+        id="buzz-button"
+        class="w-60 aspect-square flex justify-center items-center"
+      >
+        {{ block "loading-spinner" . }}{{ end }}
+      </div>
+    </div>
   </form>
 </main>
 {{ end }}

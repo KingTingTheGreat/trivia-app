@@ -105,7 +105,7 @@ func (ps *playerStore) InsertPlayer(playerName string) (string, error) {
 }
 
 // updates an existing player
-func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error {
+func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) (Player, error) {
 	dlog.DLog("PutPlayer()")
 	defer dlog.DLog("leaving PutPlayer()")
 	ps.mu.Lock()
@@ -116,7 +116,7 @@ func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error
 	// check this player exists
 	if player, ok = ps.playerData[token]; !ok {
 		dlog.DLog("player not found")
-		return errors.New("player not found")
+		return Player{}, errors.New("player not found")
 	}
 
 	// update the player attributes
@@ -148,7 +148,7 @@ func (ps *playerStore) PutPlayer(token string, playerUpdates UpdatePlayer) error
 	player.LastUpdate = time.Now()
 	ps.playerData[token] = player
 
-	return nil
+	return player, nil
 }
 
 // updates an existing player's score to 0
