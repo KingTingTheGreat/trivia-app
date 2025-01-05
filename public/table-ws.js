@@ -29,8 +29,8 @@ if (
 
   const setLoading = () => {
     console.log("setLoading()");
-    document.getElementById("leaderboard").innerHTML = loading;
-    document.getElementById("buzzed-in").innerHTML = loading;
+    document.getElementById("leaderboard-body").innerHTML = loading;
+    document.getElementById("buzzed-in-body").innerHTML = loading;
   };
 
   document.addEventListener("htmx:wsConnecting", (e) => {
