@@ -1,0 +1,8 @@
+{{ define "page-section" }}
+<a href="{{ .Path }}" target="_blank" class="hover:bg-sky-200">
+  <div class="m-2 p-3 border-2 border-transparent hover:border-black">
+    <h2 class="font-semibold text-2xl">{{ .Title }}</h2>
+    <p>{{ .Description }}</p>
+  </div>
+</a>
+{{ end }}

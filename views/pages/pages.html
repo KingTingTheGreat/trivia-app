@@ -1,0 +1,9 @@
+{{ define "content" }}
+<div class="p-4">
+  <h1 class="text-5xl font-bold">Pages</h1>
+  <div>
+    {{ range $i, $pageSection := .Pages}} {{ block "page-section" $pageSection
+    }}{{ end }} {{ end }}
+  </div>
+</div>
+{{ end }}

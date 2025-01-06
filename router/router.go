@@ -23,6 +23,7 @@ func Router() *http.ServeMux {
 	router.HandleFunc("GET /leaderboard", page_handlers.Leaderboard)
 	router.HandleFunc("GET /buzzed-in", page_handlers.BuzzedIn)
 	router.HandleFunc("GET /game", page_handlers.Game)
+	router.HandleFunc("GET /pages", page_handlers.Pages)
 
 	ct := handlers.Count{Count: 0}
 	router.HandleFunc("GET /count", func(w http.ResponseWriter, r *http.Request) {

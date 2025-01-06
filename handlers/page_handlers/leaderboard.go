@@ -11,6 +11,7 @@ func Leaderboard(w http.ResponseWriter, r *http.Request) {
 	dlog.DLog("leaderboard handler")
 
 	data := ws_handlers.LeaderboardData{
+		Title:    "Leaderboard",
 		TableId:  "leaderboard",
 		Endpoint: "/leaderboard-ws",
 	}

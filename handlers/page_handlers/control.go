@@ -20,23 +20,13 @@ func Control(w http.ResponseWriter, r *http.Request) {
 	playerList := ws_handlers.AllPlayerNames()
 	data := ControlData{
 		Leaderboard: ws_handlers.LeaderboardData{
-			TableId: "leaderboard",
-			Title:   "Leaderboard",
-			Headers: []string{
-				"Name",
-				"Score",
-			},
-			RowData:  ws_handlers.MakeLeaderboard(),
+			TableId:  "leaderboard",
+			Title:    "Leaderboard",
 			Endpoint: "/leaderboard-ws",
 		},
 		BuzzedIn: ws_handlers.LeaderboardData{
-			TableId: "buzzed-in",
-			Title:   "Buzzed In",
-			Headers: []string{
-				"Name",
-				"Time",
-			},
-			RowData:  ws_handlers.MakeBuzzedIn(),
+			TableId:  "buzzed-in",
+			Title:    "Buzzed In",
 			Endpoint: "/buzzed-in-ws",
 		},
 		PlayerList: playerList,
