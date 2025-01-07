@@ -1,10 +1,5 @@
 {{ define "playerlist-dropdown-ws" }}
-<div
-  id="playerlist-dropdown-ws"
-  hx-ext="ws"
-  ws-connect="/players-ws"
-  hx-swap="innerHTML"
->
+<div id="playerlist-dropdown-ws" hx-ext="ws" ws-connect="/players-ws">
   {{ block "playerlist-dropdown" . }}{{ end }}
 </div>
 {{ end }}
