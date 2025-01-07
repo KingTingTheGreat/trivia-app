@@ -2,7 +2,6 @@ package router
 
 import (
 	"net/http"
-	"trivia-app/handlers"
 	"trivia-app/handlers/page_handlers"
 	"trivia-app/handlers/rest_handlers"
 	"trivia-app/handlers/ws_handlers"
@@ -25,12 +24,6 @@ func Router() *http.ServeMux {
 	router.HandleFunc("GET /buzzed-in", page_handlers.BuzzedIn)
 	router.HandleFunc("GET /game", page_handlers.Game)
 	router.HandleFunc("GET /pages", page_handlers.Pages)
-
-	ct := handlers.Count{Count: 0}
-	router.HandleFunc("GET /count", func(w http.ResponseWriter, r *http.Request) {
-		ct.Count++
-		handlers.RenderTemplate(w, "count.html", ct)
-	})
 
 	router.HandleFunc("GET /health", rest_handlers.Health)
 
