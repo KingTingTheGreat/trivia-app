@@ -169,7 +169,6 @@ func initIp() string {
 				ipIndex--
 			}
 			if ipIndex >= 0 && ipIndex < len(ipOpts) {
-				fmt.Println(ipOpts[ipIndex].name)
 				return ipOpts[ipIndex].ip
 			}
 		}
