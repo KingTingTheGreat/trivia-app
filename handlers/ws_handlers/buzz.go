@@ -40,14 +40,14 @@ func BuzzWS(w http.ResponseWriter, r *http.Request) {
 	token, ok := ctx.Value("token").(string)
 	if !ok {
 		dlog.DLog("no token")
-		util.RedirectError(w, r, "something went wrong, please try again.")
+		util.Redirect(w, r, "/")
 		return
 	}
 
 	player, ok := ctx.Value("player").(*shared.Player)
 	if !ok {
 		dlog.DLog("player does not exist")
-		util.RedirectError(w, r, "player does not exist")
+		util.Redirect(w, r, "/")
 		return
 	}
 	dlog.DLog("player exists")
@@ -57,7 +57,7 @@ func BuzzWS(w http.ResponseWriter, r *http.Request) {
 	conn, err := shared.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		dlog.DLog("error upgrading connection to websocket")
-		util.RedirectError(w, r, "something went wrong, please try again.")
+		util.Redirect(w, r, "/")
 		return
 	}
 

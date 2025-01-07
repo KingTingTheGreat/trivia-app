@@ -1,9 +1,8 @@
 package rest_handlers
 
 import (
-	"fmt"
 	"net/http"
-	"regexp"
+	"net/url"
 	"strconv"
 	"strings"
 	"trivia-app/dlog"
@@ -11,11 +10,6 @@ import (
 	"trivia-app/shared"
 	"trivia-app/util"
 )
-
-const COOKIE_NAME = "trivia-app-token"
-
-// only allow alphnum, -, _
-var re = regexp.MustCompile("^[a-zA-Z0-9_ -]+$")
 
 func GetPlayerName(w http.ResponseWriter, r *http.Request) {
 	token, err := util.ReadToken(r)
@@ -37,11 +31,7 @@ func GetPlayerName(w http.ResponseWriter, r *http.Request) {
 func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	playerName := strings.TrimSpace(r.FormValue("name"))
 	dlog.DLog("pName", playerName)
-	if playerName == "auth" {
-		dlog.DLog("invalid name")
-		util.RedirectError(w, r, "invalid player name")
-		return
-	} else if !re.MatchString(playerName) {
+	if util.HasInvalidChar(playerName) {
 		dlog.DLog("invalid char", playerName)
 
 		handlers.RenderComponent(w, "error-message.html", util.ErrorData{
@@ -55,8 +45,7 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 		// recover previous session
 		if shared.PlayerStore.VerifyTokenName(token, playerName) {
 			dlog.DLog("SESSION RECOVERED")
-			w.Header().Add("HX-Redirect", fmt.Sprintf("/play/%s", playerName))
-			http.Redirect(w, r, fmt.Sprintf("/play/%s", playerName), http.StatusSeeOther)
+			util.Redirect(w, r, "/play/"+url.PathEscape(playerName))
 			return
 		}
 	}
@@ -68,7 +57,6 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 		handlers.RenderComponent(w, "error-message.html", util.ErrorData{
 			Error: err.Error(),
 		})
-		// util.RedirectError(w, r, err.Error())
 		return
 	} else {
 		dlog.DLog("NEW PLAYER")
@@ -82,15 +70,7 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	util.WriteToken(w, token)
 
 	dlog.DLog("created new player")
-	redirectUrl := fmt.Sprintf("/play/%s", playerName)
-	w.Header().Set("HX-Location", redirectUrl)
-	w.Header().Set("Location", redirectUrl)
-
-	if util.RequestedHTMX(r) {
-		w.WriteHeader(http.StatusOK)
-	} else {
-		http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
-	}
+	util.Redirect(w, r, "/play/"+url.PathEscape(playerName))
 }
 
 func UpdatePlayer(w http.ResponseWriter, r *http.Request) {

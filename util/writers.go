@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"net/http"
 	"trivia-app/dlog"
 	"trivia-app/handlers"
@@ -21,16 +20,7 @@ func Success(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func RedirectError(w http.ResponseWriter, r *http.Request, message string) {
-	dlog.DLog("redirecting error", message)
-
-	var redirectUrl string
-	if message != "" {
-		redirectUrl = fmt.Sprintf("/?error=%s", message)
-	} else {
-		redirectUrl = "/"
-	}
-
+func Redirect(w http.ResponseWriter, r *http.Request, redirectUrl string) {
 	w.Header().Set("HX-Location", redirectUrl)
 	w.Header().Set("Location", redirectUrl)
 

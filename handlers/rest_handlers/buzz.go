@@ -13,7 +13,7 @@ func Buzz(w http.ResponseWriter, r *http.Request) {
 	token, ok := ctx.Value("token").(string)
 	if !ok {
 		dlog.DLog("no token")
-		util.RedirectError(w, r, "something went wrong, please try again.")
+		util.Redirect(w, r, "/")
 		return
 	}
 
@@ -22,7 +22,7 @@ func Buzz(w http.ResponseWriter, r *http.Request) {
 	success, err := shared.PlayerStore.BuzzIn(token, name)
 	if err != nil {
 		dlog.DLog("buzz in error", err.Error())
-		util.RedirectError(w, r, "something went wrong, please try again.")
+		util.Redirect(w, r, "/")
 		return
 	} else if success {
 		go func() { shared.BuzzedInChan <- true }()

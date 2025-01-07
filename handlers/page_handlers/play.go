@@ -21,7 +21,7 @@ func Play(w http.ResponseWriter, r *http.Request) {
 	player, ok := ctx.Value("player").(*shared.Player)
 	if !ok || player.Name != name {
 		log.Println("player does not exist")
-		util.RedirectError(w, r, "")
+		util.Redirect(w, r, "/")
 		return
 	}
 
