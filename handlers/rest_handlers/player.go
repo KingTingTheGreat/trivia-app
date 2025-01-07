@@ -48,7 +48,6 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 		handlers.RenderComponent(w, "error-message.html", page_handlers.HomeData{
 			Error: "name can only contain characters a-Z, 0-9, -, and _",
 		})
-		// util.RedirectError(w, r, "name can only contain characters a-Z, 0-9, -, and _")
 		return
 	}
 
@@ -84,8 +83,15 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	util.WriteToken(w, token)
 
 	dlog.DLog("created new player")
-	w.Header().Add("HX-Redirect", fmt.Sprintf("/play/%s", playerName))
-	http.Redirect(w, r, fmt.Sprintf("/play/%s", playerName), http.StatusSeeOther)
+	redirectUrl := fmt.Sprintf("/play/%s", playerName)
+	w.Header().Set("HX-Location", redirectUrl)
+	w.Header().Set("Location", redirectUrl)
+
+	if r.Header.Get("Hx-Request") != "" {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
+	}
 }
 
 func UpdatePlayer(w http.ResponseWriter, r *http.Request) {

@@ -12,7 +12,7 @@ if (["/control"].includes(pathname)) {
 }
 
 const setError = (errorMessage) => {
-  document.getElementById("error-message").innerText = errorMessage;
+  document.getElementById("error").innerText = errorMessage;
 };
 
 const getPassword = () => {

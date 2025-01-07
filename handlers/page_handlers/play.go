@@ -31,5 +31,10 @@ func Play(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("name", name)
-	handlers.RenderTemplate(w, "play.html", data)
+	if shared.ReactiveBuzzers() {
+		handlers.RenderTemplate(w, "play-reactive.html", data)
+	} else {
+		data.Ready = true
+		handlers.RenderTemplate(w, "play-nonreactive.html", data)
+	}
 }

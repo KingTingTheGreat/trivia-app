@@ -63,7 +63,7 @@ func MakeBuzzedIn() [][]string {
 	for _, player := range playerList {
 		// filter out players who have not buzzed in
 		if player.BuzzedIn.IsZero() {
-			// dlog.DLog("skiping buzz")
+			dlog.DLog("skiping buzz")
 			continue // could probably break loop instead
 		}
 		dlog.DLog("appending buzz")

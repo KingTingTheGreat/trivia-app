@@ -3,6 +3,7 @@ package shared
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"math/rand"
 	"strings"
 	"sync"
@@ -291,19 +292,24 @@ func (ps *playerStore) VerifyTokenName(token, name string) bool {
 	return ok && storedToken == token
 }
 
-func (ps *playerStore) BuzzIn(token, name string) bool {
+func (ps *playerStore) BuzzIn(token, name string) (bool, error) {
 	dlog.DLog("BuzzIn()")
 	defer dlog.DLog("leaving ResetBuzzers()")
 	ps.mu.Lock()
 	player, ok := ps.playerData[token]
 	if !ok {
 		ps.mu.Unlock()
-		return false
+		return false, fmt.Errorf("invalid token")
 	}
-	if !player.BuzzedIn.IsZero() || player.Name != name {
+	if player.Name != name {
+		dlog.DLog("incorrect name", player.Name == name, "pName", player.Name, "name", name)
+		ps.mu.Unlock()
+		return false, fmt.Errorf("incorrect name")
+	}
+	if !player.BuzzedIn.IsZero() {
 		dlog.DLog("already buzzed in")
 		ps.mu.Unlock()
-		return false
+		return false, nil
 	}
 	ps.mu.Unlock()
 
@@ -312,10 +318,10 @@ func (ps *playerStore) BuzzIn(token, name string) bool {
 	_, err := ps.PutPlayer(token, UpdatePlayer{BuzzedIn: &now, ButtonReady: &f})
 	if err != nil {
 		dlog.DLog("failed to buzz into player store")
-		return false
+		return false, nil
 	}
 
-	return true
+	return true, nil
 }
 
 func (ps *playerStore) ResetBuzzers() {

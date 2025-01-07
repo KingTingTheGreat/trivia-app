@@ -20,10 +20,21 @@ func Success(w http.ResponseWriter) {
 
 func RedirectError(w http.ResponseWriter, r *http.Request, message string) {
 	dlog.DLog("redirecting error", message)
+
+	var redirectUrl string
 	if message != "" {
-		http.Redirect(w, r, fmt.Sprintf("/?error=%s", message), http.StatusSeeOther)
+		redirectUrl = fmt.Sprintf("/?error=%s", message)
 	} else {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		redirectUrl = "/"
+	}
+
+	w.Header().Set("HX-Location", redirectUrl)
+	w.Header().Set("Location", redirectUrl)
+
+	if r.Header.Get("Hx-Request") != "" {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 	}
 }
 

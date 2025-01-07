@@ -6,6 +6,7 @@ import (
 	"trivia-app/handlers/page_handlers"
 	"trivia-app/handlers/rest_handlers"
 	"trivia-app/handlers/ws_handlers"
+	"trivia-app/shared"
 )
 
 func Router() *http.ServeMux {
@@ -35,7 +36,11 @@ func Router() *http.ServeMux {
 
 	// player flow, create and buzz
 	router.HandleFunc("POST /player", rest_handlers.PostNewPlayer)
-	router.HandleFunc("/buzz", ws_handlers.BuzzWS)
+	if shared.ReactiveBuzzers() {
+		router.HandleFunc("/buzz", ws_handlers.BuzzWS)
+	} else {
+		router.HandleFunc("POST /buzz", rest_handlers.Buzz)
+	}
 
 	// game controls
 	router.HandleFunc("GET /control", page_handlers.Control)

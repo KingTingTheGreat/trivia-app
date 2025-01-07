@@ -35,17 +35,16 @@ func parseName(urlString string) string {
 
 func BuzzWS(w http.ResponseWriter, r *http.Request) {
 	dlog.DLog("web socket")
-	// read cookie
-	token, err := util.ReadToken(r)
-	if err != nil {
-		util.UserInputError(w, "no cookie")
+
+	ctx := r.Context()
+	token, ok := ctx.Value("token").(string)
+	if !ok {
+		dlog.DLog("no token")
+		util.RedirectError(w, r, "something went wrong, please try again.")
 		return
 	}
 
-	dlog.DLog(token)
-
-	// player associated with cookie
-	player, ok := shared.PlayerStore.GetPlayer(token)
+	player, ok := ctx.Value("player").(*shared.Player)
 	if !ok {
 		dlog.DLog("player does not exist")
 		util.RedirectError(w, r, "player does not exist")
@@ -63,7 +62,7 @@ func BuzzWS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dlog.DLog("handling created websocket")
-	websocketHandler(conn, token, &player)
+	websocketHandler(conn, token, player)
 }
 
 func websocketHandler(conn *websocket.Conn, token string, playerRef *shared.Player) {
@@ -138,16 +137,19 @@ func websocketHandler(conn *websocket.Conn, token string, playerRef *shared.Play
 				// ping-pong
 				dlog.DLog(name, "keeping websocket alive")
 				conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
-			} else if msg == name && shared.PlayerStore.BuzzIn(token, msg) {
+				continue
+			}
+			success, _ := shared.PlayerStore.BuzzIn(token, msg)
+			if msg == name && success {
 				// buzz in
 				dlog.DLog(name, "buzzed in")
 				handlers.RenderComponent(&buf, "buzz-button.html", handlers.Play{Ready: false})
 				conn.WriteMessage(websocket.TextMessage, buf.Bytes())
 
 				go func() { shared.BuzzedInChan <- true }()
-			} else {
-				dlog.DLog(name, "failed to buzz")
+				continue
 			}
+			dlog.DLog(name, "failed to buzz")
 		}
 	}
 

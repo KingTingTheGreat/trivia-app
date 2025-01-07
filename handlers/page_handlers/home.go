@@ -17,10 +17,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := HomeData{
-		// Error: r.URL.Query().Get("error"),
-	}
-
+	data := HomeData{}
 	ctx := r.Context()
 	player, ok := ctx.Value("player").(*shared.Player)
 	if ok {
