@@ -4,7 +4,7 @@
   <form
     class="w-fit flex justify-center items-center m-2"
     hx-post="/player"
-    hx-target="#target"
+    hx-target="#error"
     hx-vals='js:{name: document.getElementById("name").value}'
   >
     <input
@@ -27,6 +27,6 @@
       </svg>
     </button>
   </form>
-  <div id="target">{{ block "error-message" . }}{{ end }}</div>
+  <div id="error" class="h-2">{{ block "error-message" . }}{{ end }}</div>
 </main>
 {{ end }}

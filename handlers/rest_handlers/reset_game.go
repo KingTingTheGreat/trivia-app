@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"trivia-app/dlog"
 	"trivia-app/shared"
+	"trivia-app/util"
 )
 
 func ResetGame(w http.ResponseWriter, r *http.Request) {
@@ -17,6 +18,5 @@ func ResetGame(w http.ResponseWriter, r *http.Request) {
 		shared.PlayerListChan <- true
 	}()
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
+	util.Success(w, r)
 }

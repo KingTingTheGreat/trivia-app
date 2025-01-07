@@ -7,8 +7,7 @@ import (
 )
 
 type HomeData struct {
-	Name  string
-	Error string
+	Name string
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {

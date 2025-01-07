@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"trivia-app/dlog"
 	"trivia-app/shared"
+	"trivia-app/util"
 )
 
 func ResetBuzzers(w http.ResponseWriter, r *http.Request) {
@@ -16,6 +17,5 @@ func ResetBuzzers(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	dlog.DLog("reset buzzers success")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
+	util.Success(w, r)
 }

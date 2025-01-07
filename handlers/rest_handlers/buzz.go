@@ -17,7 +17,7 @@ func Buzz(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.URL.Query().Get("name")
+	name := util.ReadValue(r, "name")
 
 	success, err := shared.PlayerStore.BuzzIn(token, name)
 	if err != nil {

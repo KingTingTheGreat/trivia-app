@@ -1,6 +1,11 @@
 {{ define "control-form" }}
 <div class="flex w-full justify-around max-w-[750px]">
-  <form id="control-form" class="grid grid-flow-row gap-y-0 auto-rows-min">
+  <form
+    id="control-form"
+    class="grid grid-flow-row gap-y-0 auto-rows-min"
+    hx-include="[id='password']"
+    hx-target="#error"
+  >
     <div class="min-h-28 px-4 py-2 flex flex-col items-center">
       <div class="flex flex-col">
         <label for="password" class="p-1">Enter Password:</label>
@@ -13,7 +18,7 @@
           class="border-2 p-1"
         />
       </div>
-      {{ block "error-message" . }}{{ end }}
+      <div id="error">{{ block "error-message" . }}{{ end }}</div>
     </div>
 
     <div class="p-2 flex flex-col md:flex-row md:items-start">
@@ -29,23 +34,25 @@
       </div>
       <div
         class="flex md:flex-col justify-center md:max-w-40 ml-2 my-2 md:my-1"
+        hx-vals='js:{name: document.getElementById("playerlist-dropdown").value}'
       >
         <button
-          onclick="event.preventDefault(); updatePlayer();"
+          hx-put="/auth/player"
+          hx-vals='js:{amount: document.getElementById("amount").value, action: "update"}'
           class="text-sm text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 me-2 mb-2"
         >
           Add To Score
         </button>
         <button
-          hx-swap="none"
-          onclick="event.preventDefault(); clearPlayer();"
+          hx-put="/auth/player"
+          hx-vals='{"action": "clear"}'
           class="text-sm text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 rounded-lg px-5 py-2.5 me-2 mb-2"
         >
           Clear Score
         </button>
         <button
-          hx-swap="none"
-          onclick="event.preventDefault(); removePlayer();"
+          hx-delete="/auth/player"
+          hx-confirm="Are you sure you want to delete this player? This action is permanent."
           class="text-sm text-white bg-red-700 hover:bg-red-800 rounded-lg px-5 py-2.5 me-2 mb-2"
         >
           Remove Player
@@ -55,13 +62,14 @@
 
     <div class="p-2 flex flex-col items-center">
       <button
-        onclick="event.preventDefault(); resetBuzzers();"
+        hx-post="/auth/reset-buzzers"
         class="text-sm text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5 me-2 mb-2 w-40"
       >
         Reset Buzzers
       </button>
       <button
-        onclick="event.preventDefault(); resetGame();"
+        hx-post="/auth/reset-game"
+        hx-confirm="Are you sure you want to reset the game? This action is permanent."
         class="text-sm text-white bg-red-700 hover:bg-red-800 rounded-lg px-5 py-2.5 me-2 mb-2 w-40"
       >
         Reset Game

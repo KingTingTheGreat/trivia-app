@@ -23,10 +23,6 @@ const getSelectedPlayer = () => {
   return document.getElementById("playerlist-dropdown").value;
 };
 
-const getAmount = () => {
-  return document.getElementById("amount").value;
-};
-
 const fetchAuthEndpoint = (endpoint, method) => {
   const password = getPassword();
   if (password === "") {
@@ -47,43 +43,4 @@ const fetchAuthEndpoint = (endpoint, method) => {
         document.getElementById("amount").value = 0;
       }
     });
-};
-
-const updatePlayer = () => {
-  const selectedPlayer = getSelectedPlayer();
-  const amount = getAmount();
-  fetchAuthEndpoint(
-    `player?name=${selectedPlayer}&amount=${amount}&action=update`,
-    "PUT",
-  );
-};
-
-const clearPlayer = () => {
-  const selectedPlayer = getSelectedPlayer();
-  fetchAuthEndpoint(`player?name=${selectedPlayer}&action=clear`, "PUT");
-};
-
-const removePlayer = () => {
-  const selectedPlayer = getSelectedPlayer();
-  if (
-    confirm(
-      "Are you sure you want to delete this player? This action is permanent.",
-    )
-  ) {
-    fetchAuthEndpoint(`player?name=${selectedPlayer}`, "DELETE");
-  }
-};
-
-const resetBuzzers = () => {
-  fetchAuthEndpoint("reset-buzzers", "POST");
-};
-
-const resetGame = () => {
-  if (
-    confirm(
-      "Are you sure you want to reset the game? This action is permanent.",
-    )
-  ) {
-    fetchAuthEndpoint("reset-game", "POST");
-  }
 };

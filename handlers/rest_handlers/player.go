@@ -8,7 +8,6 @@ import (
 	"strings"
 	"trivia-app/dlog"
 	"trivia-app/handlers"
-	"trivia-app/handlers/page_handlers"
 	"trivia-app/shared"
 	"trivia-app/util"
 )
@@ -21,13 +20,13 @@ var re = regexp.MustCompile("^[a-zA-Z0-9_ -]+$")
 func GetPlayerName(w http.ResponseWriter, r *http.Request) {
 	token, err := util.ReadToken(r)
 	if err != nil {
-		util.InputError(w, util.NO_COOKIE)
+		util.InputError(w, r, util.NO_COOKIE)
 		return
 	}
 
 	player, ok := shared.PlayerStore.GetPlayer(token)
 	if !ok {
-		util.InputError(w, util.INVALID_TOKEN)
+		util.InputError(w, r, util.INVALID_TOKEN)
 		return
 	}
 
@@ -45,7 +44,7 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	} else if !re.MatchString(playerName) {
 		dlog.DLog("invalid char", playerName)
 
-		handlers.RenderComponent(w, "error-message.html", page_handlers.HomeData{
+		handlers.RenderComponent(w, "error-message.html", util.ErrorData{
 			Error: "name can only contain characters a-Z, 0-9, -, and _",
 		})
 		return
@@ -66,7 +65,7 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		dlog.DLog("repeated name", err.Error())
 
-		handlers.RenderComponent(w, "error-message.html", page_handlers.HomeData{
+		handlers.RenderComponent(w, "error-message.html", util.ErrorData{
 			Error: err.Error(),
 		})
 		// util.RedirectError(w, r, err.Error())
@@ -87,7 +86,7 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Location", redirectUrl)
 	w.Header().Set("Location", redirectUrl)
 
-	if r.Header.Get("Hx-Request") != "" {
+	if util.RequestedHTMX(r) {
 		w.WriteHeader(http.StatusOK)
 	} else {
 		http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
@@ -95,28 +94,28 @@ func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdatePlayer(w http.ResponseWriter, r *http.Request) {
-	playerName := r.URL.Query().Get("name")
+	playerName := util.ReadValue(r, "name")
 	if playerName == "" {
-		util.InputError(w, util.NO_NAME)
+		util.InputError(w, r, util.NO_NAME)
 		return
 	}
 
 	token, ok := shared.PlayerStore.NameToToken(playerName)
 	if !ok {
-		util.InputError(w, util.NOT_FOUND)
+		util.InputError(w, r, util.NOT_FOUND)
 		return
 	}
 
-	action := strings.ToLower(r.URL.Query().Get("action"))
+	action := strings.ToLower(util.ReadValue(r, "action"))
 	if action == "update" {
-		amountStr := r.URL.Query().Get("amount")
+		amountStr := util.ReadValue(r, "amount")
 		if amountStr == "" {
-			util.InputError(w, "no amount provided")
+			util.InputError(w, r, "no amount provided")
 			return
 		}
 		amount, err := strconv.Atoi(amountStr)
 		if err != nil {
-			util.InputError(w, "invalid amount")
+			util.InputError(w, r, "invalid amount")
 			return
 		}
 
@@ -126,35 +125,36 @@ func UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 	} else if action == "clear" {
 		shared.PlayerStore.ZeroPlayer(token)
 	} else {
-		util.InputError(w, util.INVALID_ACTION)
+		dlog.DLog("invalid action", action)
+		util.InputError(w, r, util.INVALID_ACTION)
 		return
 	}
 
 	go func() { shared.LeaderboardChan <- true }()
 
-	util.Success(w)
+	util.Success(w, r)
 }
 
 func RemovePlayer(w http.ResponseWriter, r *http.Request) {
 	dlog.DLog("RemovePlayer()")
-	playerName := r.URL.Query().Get("name")
+	playerName := util.ReadValue(r, "name")
 	if playerName == "" {
 		dlog.DLog("no name")
-		util.InputError(w, util.NO_NAME)
+		util.InputError(w, r, util.NO_NAME)
 		return
 	}
 
 	token, ok := shared.PlayerStore.NameToToken(playerName)
 	if !ok {
 		dlog.DLog("invalid name and token")
-		util.InputError(w, util.NOT_FOUND)
+		util.InputError(w, r, util.NOT_FOUND)
 		return
 	}
 
 	player, ok := shared.PlayerStore.GetPlayer(token)
 	if !ok {
 		dlog.DLog("invalid name and token 2")
-		util.InputError(w, util.NOT_FOUND)
+		util.InputError(w, r, util.NOT_FOUND)
 		return
 	}
 
@@ -172,5 +172,5 @@ func RemovePlayer(w http.ResponseWriter, r *http.Request) {
 		shared.LeaderboardChan <- true
 	}()
 
-	util.Success(w)
+	util.Success(w, r)
 }

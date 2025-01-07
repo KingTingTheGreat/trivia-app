@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"trivia-app/dlog"
+	"trivia-app/handlers"
 )
 
 const NO_COOKIE = "missing cookie"
@@ -13,9 +14,11 @@ const INVALID_ACTION = "invalid action"
 const NO_NAME = "no player selected"
 const NOT_FOUND = "player not found"
 
-func Success(w http.ResponseWriter) {
+func Success(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
+	if !RequestedHTMX(r) {
+		w.Write([]byte("success"))
+	}
 }
 
 func RedirectError(w http.ResponseWriter, r *http.Request, message string) {
@@ -31,15 +34,24 @@ func RedirectError(w http.ResponseWriter, r *http.Request, message string) {
 	w.Header().Set("HX-Location", redirectUrl)
 	w.Header().Set("Location", redirectUrl)
 
-	if r.Header.Get("Hx-Request") != "" {
+	if RequestedHTMX(r) {
 		w.WriteHeader(http.StatusOK)
 	} else {
 		http.Redirect(w, r, redirectUrl, http.StatusSeeOther)
 	}
 }
 
-func InputError(w http.ResponseWriter, message string) {
+type ErrorData struct {
+	Error string
+}
+
+func InputError(w http.ResponseWriter, r *http.Request, message string) {
 	dlog.DLog("redirecting error", message)
-	w.WriteHeader(http.StatusBadRequest)
-	w.Write([]byte(message))
+
+	if RequestedHTMX(r) {
+		handlers.RenderComponent(w, "error-message.html", ErrorData{Error: message})
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(message))
+	}
 }

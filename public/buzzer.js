@@ -10,3 +10,7 @@ document.addEventListener("htmx:wsAfterMessage", (e) => {
     audio.play();
   }
 });
+
+document.addEventListener("htmx:targetError", (e) => {
+  console.error(e);
+});

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -31,6 +32,11 @@ func Logger(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 
 		log.Println(r.Form)
+		body, err := io.ReadAll(r.Body)
+		if err == nil {
+			log.Printf("Request Body: %s\n", body)
+		}
+
 		if !strings.HasPrefix(r.URL.Path, "/public") {
 			log.Println(r.Method, r.URL, time.Since(start))
 		}
