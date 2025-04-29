@@ -1,7 +1,9 @@
 package shared
 
-import "os"
+import (
+	env "trivia-app"
+)
 
 func ReactiveBuzzers() bool {
-	return os.Getenv("REACTIVE") != "false"
+	return env.EnvVal("REACTIVE") != "false"
 }

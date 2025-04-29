@@ -1,6 +1,7 @@
 package router
 
 import (
+	"embed"
 	"net/http"
 	"trivia-app/handlers/page_handlers"
 	"trivia-app/handlers/rest_handlers"
@@ -8,13 +9,14 @@ import (
 	"trivia-app/shared"
 )
 
+//go:embed public/*
+var content embed.FS
+
 func Router() *http.ServeMux {
 	router := http.NewServeMux()
 
 	// serve files (css, js, mp3, etc)
-	router.Handle("/public/", http.StripPrefix("/public/",
-		http.FileServer(http.Dir("./public"))),
-	)
+	router.Handle("/public/", http.FileServer(http.FS(content)))
 
 	// pages
 	router.HandleFunc("/", page_handlers.Home)

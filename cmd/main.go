@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	env "trivia-app"
 	"trivia-app/handlers/ws_handlers"
 	"trivia-app/server"
 	"trivia-app/shared"
@@ -18,6 +19,6 @@ func main() {
 	go ws_handlers.BroadcastPlayerList()
 
 	server := server.Server()
-	log.Println("running at http://localhost:8080")
+	log.Println("running at http://" + env.EnvVal("IP") + ":8080")
 	server.ListenAndServe()
 }

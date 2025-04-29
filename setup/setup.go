@@ -5,12 +5,12 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"os"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
+	env "trivia-app"
 
 	"github.com/joho/godotenv"
 )
@@ -39,7 +39,7 @@ func main() {
 }
 
 func initPw() string {
-	password := os.Getenv("PASSWORD")
+	password := env.EnvVal("PASSWORD")
 	if password != "" {
 		var res string
 		fmt.Print("Previous password detected. Would you like to create a new one? y/N ")

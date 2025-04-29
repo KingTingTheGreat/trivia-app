@@ -3,7 +3,7 @@ package page_handlers
 import (
 	"log"
 	"net/http"
-	"os"
+	env "trivia-app"
 	"trivia-app/handlers"
 
 	qrcode "github.com/skip2/go-qrcode"
@@ -15,7 +15,7 @@ type JoinData struct {
 }
 
 func Join(w http.ResponseWriter, r *http.Request) {
-	ip := os.Getenv("IP")
+	ip := env.EnvVal("IP")
 	if ip == "" {
 		ip = "localhost"
 	}
