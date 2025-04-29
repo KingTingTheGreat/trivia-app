@@ -16,7 +16,7 @@ type Play struct {
 	Ready bool
 }
 
-func RenderTemplate(w io.Writer, filename string, data interface{}) {
+func RenderTemplate(w io.Writer, filename string, data any) {
 	// parse layout
 	tmpl := template.Must(template.New("layout").Parse(views.Layout))
 	// parse pages
@@ -32,7 +32,7 @@ func RenderTemplate(w io.Writer, filename string, data interface{}) {
 	}
 }
 
-func RenderComponent(w io.Writer, filename string, data interface{}) {
+func RenderComponent(w io.Writer, filename string, data any) {
 	// parse component
 	tmpl := template.Must(template.ParseFS(views.Components, "components/"+filename))
 
