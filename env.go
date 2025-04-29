@@ -27,3 +27,11 @@ func EnvVal(key string) string {
 	}
 	return os.Getenv(key)
 }
+
+func GetIP() string {
+	ip := EnvVal("IP")
+	if ip == "" {
+		return "localhost"
+	}
+	return ip
+}

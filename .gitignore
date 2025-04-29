@@ -2,4 +2,4 @@ tmp
 trivia-app*
 *.txt
 *.env*
-public/qrcode.png
+router/public/qrcode.png

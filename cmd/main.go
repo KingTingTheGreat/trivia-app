@@ -19,6 +19,6 @@ func main() {
 	go ws_handlers.BroadcastPlayerList()
 
 	server := server.Server()
-	log.Println("running at http://" + env.EnvVal("IP") + ":8080")
+	log.Println("running at http://" + env.GetIP() + ":8080")
 	server.ListenAndServe()
 }
