@@ -8,10 +8,6 @@ import (
 	"trivia-app/views"
 )
 
-type Count struct {
-	Count int
-}
-
 type Play struct {
 	Ready bool
 }
