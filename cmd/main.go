@@ -6,12 +6,10 @@ import (
 	"trivia-app/handlers/ws_handlers"
 	"trivia-app/server"
 	"trivia-app/shared"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	godotenv.Load(".env")
+	env.LoadEnv()
 	shared.LoadPassword()
 
 	go ws_handlers.BroadcastLeaderboard()
