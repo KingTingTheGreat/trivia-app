@@ -1,4 +1,5 @@
 #!/bin/bash
 
-npx tailwindcss -i ./public/input.css -o ./public/output.css --watch
+npx @tailwindcss/cli -i ./router/public/input.css -o ./router/public/output.css --watch
+
 

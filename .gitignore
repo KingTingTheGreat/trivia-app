@@ -3,3 +3,7 @@ trivia-app*
 *.txt
 *.env*
 router/public/qrcode.png
+
+node_modules/
+package.json
+package-lock.json 
