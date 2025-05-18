@@ -2,9 +2,9 @@ package dlog
 
 import "log"
 
-const DEBUG = true
+const DEBUG = false
 
-func DLog(v ...interface{}) {
+func DLog(v ...any) {
 	if DEBUG {
 		log.Println(v...)
 	}
