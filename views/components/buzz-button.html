@@ -2,7 +2,7 @@
 <button
   type="submit"
   id="buzz-button"
-  class="p-6 w-60 aspect-square select-none text-center text-6xl rounded-full {{ if .Ready }} text-black bg-green-300 {{ else }} text-gray-600 bg-gray-400 {{ end }}"
+  class="p-6 w-60 aspect-square select-none text-center text-6xl rounded-full {{ if .Ready }} text-black bg-green-300 active:ring-gray-400 {{ else }} text-gray-600 bg-gray-400 {{ end }}"
   {{
   if
   .Ready
