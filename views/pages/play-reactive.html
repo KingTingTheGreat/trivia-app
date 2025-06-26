@@ -6,7 +6,7 @@
   ws-send="{{.Name}}"
   hx-target="target"
 >
-  <h1 class="p-2 m-4 text-4xl">Hi {{ .Name }}!</h1>
+  <h1 class="p-2 m-4 text-4xl text-center">Hi {{ .Name }}!</h1>
   <form ws-send>
     <input name="name" value="{{.Name}}" hidden />
     <div id="target">
