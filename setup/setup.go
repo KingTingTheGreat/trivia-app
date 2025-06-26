@@ -11,31 +11,16 @@ import (
 	"strings"
 	"time"
 	env "trivia-app"
-
-	"github.com/joho/godotenv"
 )
 
-const ENV_FILE = ".env"
-
 func main() {
-	godotenv.Load(ENV_FILE)
+	env.LoadEnv()
 
-	envVals := map[string]string{
-		"PASSWORD": "",
-		"IP":       "",
-		"REACTIVE": "",
-	}
+	env.Set("PASSWORD", initPw())
+	env.Set("IP", initIp())
+	env.Set("REACTIVE", initReactive())
 
-	password := initPw()
-	envVals["PASSWORD"] = password
-
-	ip := initIp()
-	envVals["IP"] = ip
-
-	reactive := initReactive()
-	envVals["REACTIVE"] = reactive
-
-	godotenv.Write(envVals, ENV_FILE)
+	env.Save()
 }
 
 func initPw() string {

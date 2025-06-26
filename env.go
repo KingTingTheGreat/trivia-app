@@ -35,3 +35,11 @@ func GetIP() string {
 	}
 	return ip
 }
+
+func Set(key string, value string) {
+	env[key] = value
+}
+
+func Save() error {
+	return godotenv.Write(env, ".env")
+}
