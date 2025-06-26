@@ -3,6 +3,7 @@ package handlers
 import (
 	"html/template"
 	"io"
+	"net/http"
 	"strings"
 	"trivia-app/dlog"
 	"trivia-app/views"
@@ -12,7 +13,7 @@ type Play struct {
 	Ready bool
 }
 
-func RenderTemplate(w io.Writer, filename string, data any) {
+func RenderTemplate(w http.ResponseWriter, filename string, data any) {
 	// parse layout
 	tmpl := template.Must(template.New("layout").Parse(views.Layout))
 	// parse pages
