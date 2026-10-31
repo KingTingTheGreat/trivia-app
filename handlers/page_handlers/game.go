@@ -17,24 +17,16 @@ func Game(w http.ResponseWriter, r *http.Request) {
 
 	data := GameData{
 		Leaderboard: ws_handlers.LeaderboardData{
-			TableId: "leaderboard",
-			Title:   "Leaderboard",
-			Headers: []string{
-				"Name",
-				"Score",
-			},
-			RowData:  ws_handlers.MakeLeaderboard(),
-			Endpoint: "/leaderboard-ws",
+			TableId:     "leaderboard",
+			Title:       "Leaderboard",
+			Description: "Top players by score",
+			Endpoint:    "/leaderboard-ws",
 		},
 		BuzzedIn: ws_handlers.LeaderboardData{
-			TableId: "buzzed-in",
-			Title:   "Buzzed In",
-			Headers: []string{
-				"Name",
-				"Time",
-			},
-			RowData:  ws_handlers.MakeBuzzedIn(),
-			Endpoint: "/buzzed-in-ws",
+			TableId:     "buzzed-in",
+			Title:       "Buzzed In",
+			Description: "Players ranked by reaction speed",
+			Endpoint:    "/buzzed-in-ws",
 		},
 	}
 

@@ -1,50 +1,31 @@
 // this ws logic is only needed on the play/buzzer page
+
+function handleWSCloseAndError() {
+  document.getElementById("player-data").innerHTML =
+    `<div class="m-8">${loading}</div>`;
+  new Promise((resolve) => setTimeout(resolve, 500)).then(() => {
+    // console.log("reloading page after ws close/error");
+    // const name = window.location.pathname.split("/").pop();
+    // fetch(`/player?name=${name}`).then((res) => {
+    //   if (res.status === 200) {
+    //     window.location.reload();
+    //   } else {
+    window.location.href = "/";
+    // }
+    // });
+  });
+}
+
 if (window.location.pathname.startsWith("/play")) {
-  const PONG_DATA = JSON.stringify({
-    name: "\x1F",
-    HEADERS: {
-      "HX-Current-URL": window.location.href,
-    },
-  });
-
-  // const pongForm = document.getElementById("pong-form");
-  function pongFunc(ws) {
-    console.log("sending pong");
-    ws.send(PONG_DATA);
-    setTimeout(() => {
-      console.log("recurse");
-      pongFunc(ws);
-    }, 5000);
-  }
-
-  document.addEventListener("htmx:wsOpen", (e) => {
-    const ws = e.detail.event.currentTarget;
-    try {
-      ws.send(PONG_DATA);
-    } catch (e) {
-      console.error(e);
-    }
-
-    // console.log(e);
-    // console.log(e.detail.socketWrapper);
-    // console.log(Object.keys(e));
-    // console.log(Object.getOwnPropertyNames(e));
-
-    console.log("initializing connection");
-    console.log("initiazed");
-
-    pongFunc(ws);
-  });
-
   document.addEventListener("htmx:wsClose", () => {
-    window.location.replace("/");
     console.log("ws close event");
+    handleWSCloseAndError();
   });
 
-  document.addEventListener("htmx:wsError", () => {
-    window.location.replace("/");
-    console.log("ws error event");
-  });
+  // document.addEventListener("htmx:wsError", () => {
+  //   console.log("ws error event");
+  //   handleWSCloseAndError();
+  // });
 
   document.addEventListener("htmx:wsBeforeMessage", () => {
     console.log("buzzing in");

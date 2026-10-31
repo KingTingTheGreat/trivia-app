@@ -2,7 +2,6 @@ package page_handlers
 
 import (
 	"net/http"
-	env "trivia-app"
 	"trivia-app/handlers"
 )
 
@@ -12,7 +11,7 @@ type JoinData struct {
 }
 
 func Join(w http.ResponseWriter, r *http.Request) {
-	url := "http://" + env.GetIP() + ":8080"
+	url := handlers.QrCodeObj.Content
 
 	var qrCodeStr string
 	if handlers.QrCodeErr == nil {

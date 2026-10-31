@@ -1,28 +1,18 @@
 package ws_handlers
 
 import (
-	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 	"trivia-app/dlog"
-	"trivia-app/handlers"
 	"trivia-app/shared"
 	"trivia-app/util"
 
 	"github.com/gorilla/websocket"
 )
-
-const READ_DEADLINE = 10 // seconds
-
-type WSMsg struct {
-	Name    string `json:"name"`
-	Headers struct {
-		Url string `json:"HX-Current-URL"`
-	} `json:"HEADERS"`
-}
 
 func parseName(urlString string) string {
 	urlSplit := strings.Split(urlString, "/")
@@ -76,7 +66,7 @@ func websocketHandler(conn *websocket.Conn, token string, playerRef *shared.Play
 			dlog.DLog("error closing websocket connection")
 		}
 	}(conn)
-	var body WSMsg
+	var body util.WSMsg
 
 	dlog.DLog("reading message")
 	// first message is used to verify player, not buzz in
@@ -105,16 +95,19 @@ func websocketHandler(conn *websocket.Conn, token string, playerRef *shared.Play
 		return
 	}
 
-	var buf bytes.Buffer
-	handlers.RenderComponent(&buf, "buzz-button.html", handlers.Play{Ready: player.ButtonReady})
-	conn.WriteMessage(websocket.TextMessage, buf.Bytes())
+	log.Println("player score", player.Score)
+	err = shared.PlayerStore.PlayerWS(token)
+	if err != nil {
+		dlog.DLog("error updating player websocket", name)
+		return
+	}
 
 	go func() { shared.LeaderboardChan <- true }()
 
 	killChan := make(chan bool)
 	readFunc := func() {
 		defer func() { dlog.DLog("ending readFunc", player.Name); killChan <- true }()
-		conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
+		conn.SetReadDeadline(time.Now().Add(util.READ_DEADLINE * time.Second))
 		for {
 			dlog.DLog("buzz ws loop")
 
@@ -136,15 +129,18 @@ func websocketHandler(conn *websocket.Conn, token string, playerRef *shared.Play
 			if msg == "\x1F" {
 				// ping-pong
 				dlog.DLog(name, "keeping websocket alive")
-				conn.SetReadDeadline(time.Now().Add(READ_DEADLINE * time.Second))
+				conn.WriteMessage(websocket.TextMessage, []byte("\x1F"))
+				conn.SetReadDeadline(time.Now().Add(util.READ_DEADLINE * time.Second))
 				continue
 			}
 			success, _ := shared.PlayerStore.BuzzIn(token, msg)
 			if msg == name && success {
 				// buzz in
 				dlog.DLog(name, "buzzed in")
-				handlers.RenderComponent(&buf, "buzz-button.html", handlers.Play{Ready: false})
-				conn.WriteMessage(websocket.TextMessage, buf.Bytes())
+				err := shared.PlayerStore.PlayerWS(token)
+				if err != nil {
+					dlog.DLog("error updating player websocket after buzz in", name)
+				}
 
 				go func() { shared.BuzzedInChan <- true }()
 				continue

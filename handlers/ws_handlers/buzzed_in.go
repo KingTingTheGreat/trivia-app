@@ -2,6 +2,7 @@ package ws_handlers
 
 import (
 	"bytes"
+	"io"
 	"net/http"
 	"sort"
 	"trivia-app/dlog"
@@ -18,6 +19,16 @@ type buzzedInPlayer struct {
 	Time string
 }
 
+func renderBuzzedIn(w io.Writer) {
+	handlers.RenderComponent(w, "table-body.html", LeaderboardData{
+		TableId:      "buzzed-in",
+		Title:        "Buzzed In",
+		Description:  "Players ranked by reaction speed",
+		EmptyMessage: "Players will appear here once they buzz in",
+		TableData:    MakeBuzzedIn(),
+	})
+}
+
 func BuzzedInWS(w http.ResponseWriter, r *http.Request) {
 	conn, err := shared.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -30,21 +41,13 @@ func BuzzedInWS(w http.ResponseWriter, r *http.Request) {
 
 	// write current state (this is for reconnections)
 	var buf bytes.Buffer
-	handlers.RenderComponent(&buf, "table-body.html", LeaderboardData{
-		TableId: "buzzed-in",
-		Title:   "Buzzed In",
-		Headers: []string{
-			"Name",
-			"Time",
-		},
-		RowData: MakeBuzzedIn(),
-	})
+	renderBuzzedIn(&buf)
 	conn.WriteMessage(websocket.TextMessage, buf.Bytes())
 
 	go buzzedInWS.KeepAlive(conn)
 }
 
-func MakeBuzzedIn() [][]string {
+func MakeBuzzedIn() []TableRow {
 	playerList := shared.PlayerStore.AllPlayers()
 
 	// sort by buzz in time, then score, then name
@@ -59,7 +62,7 @@ func MakeBuzzedIn() [][]string {
 		return pI.Name < pJ.Name
 	})
 
-	buzzedIn := make([][]string, 0)
+	buzzedIn := make([]TableRow, 0)
 	for _, player := range playerList {
 		// filter out players who have not buzzed in
 		if player.BuzzedIn.IsZero() {
@@ -67,9 +70,13 @@ func MakeBuzzedIn() [][]string {
 			continue // could probably break loop instead
 		}
 		dlog.DLog("appending buzz")
-		buzzedIn = append(buzzedIn, []string{
-			player.Name,
-			player.BuzzedIn.Format("03:04:05.0 PM"),
+		buzzedIn = append(buzzedIn, TableRow{
+			Place:    len(buzzedIn) + 1,
+			Name:     player.Name,
+			Data:     player.BuzzedIn.Format("03:04:05.0 PM"),
+			DataDesc: "Buzzed In At",
+			Icon:     false,
+			Color:    "",
 		})
 	}
 
@@ -80,15 +87,7 @@ func BroadcastBuzzedIn() {
 	var buf bytes.Buffer
 	for range shared.BuzzedInChan {
 		dlog.DLog("buzzed in chan")
-		handlers.RenderComponent(&buf, "table-body.html", LeaderboardData{
-			TableId: "buzzed-in",
-			Title:   "Buzzed In",
-			Headers: []string{
-				"Name",
-				"Time",
-			},
-			RowData: MakeBuzzedIn(),
-		})
+		renderBuzzedIn(&buf)
 		buzzedInWS.WriteToAll(buf.Bytes())
 	}
 }

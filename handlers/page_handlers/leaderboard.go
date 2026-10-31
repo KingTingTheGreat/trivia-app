@@ -11,9 +11,10 @@ func Leaderboard(w http.ResponseWriter, r *http.Request) {
 	dlog.DLog("leaderboard handler")
 
 	data := ws_handlers.LeaderboardData{
-		Title:    "Leaderboard",
-		TableId:  "leaderboard",
-		Endpoint: "/leaderboard-ws",
+		TableId:     "leaderboard",
+		Title:       "Leaderboard",
+		Description: "Top players by score",
+		Endpoint:    "/leaderboard-ws",
 	}
 
 	handlers.RenderTemplate(w, "leaderboard.html", data)

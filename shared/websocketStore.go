@@ -3,6 +3,7 @@ package shared
 import (
 	"sync"
 	"trivia-app/dlog"
+	"trivia-app/util"
 
 	"github.com/gorilla/websocket"
 )
@@ -36,22 +37,15 @@ func (ws *websocketStore) WriteToAll(data []byte) {
 	}
 }
 
+const READ_DEADLINE = 10 // seconds
+
 func (ws *websocketStore) KeepAlive(conn *websocket.Conn) {
 	defer func(conn *websocket.Conn) {
-		dlog.DLog("closing leaderboard websocket")
+		// closing websocket is handled in util.HandleWebSocket
+		dlog.DLog("deleting conn from websocket store")
 		ws.DeleteConn(conn)
-		err := conn.Close()
-		if err != nil {
-			dlog.DLog("error closing leaderboard websocket")
-		}
 	}(conn)
-
-	for {
-		_, _, err := conn.ReadMessage()
-		if err != nil {
-			break
-		}
-	}
+	util.HandleWebSocket(conn)
 }
 
 func NewWebsocketStore() websocketStore {

@@ -7,7 +7,7 @@ import (
 	"github.com/skip2/go-qrcode"
 )
 
-var QrCodeObj, QrCodeErr = qrcode.New("http://"+env.GetIP()+":8080", qrcode.High)
+var QrCodeObj, QrCodeErr = qrcode.New(env.GetIP(), qrcode.High)
 
 func QrCode(w http.ResponseWriter, r *http.Request) {
 	if QrCodeErr == nil {

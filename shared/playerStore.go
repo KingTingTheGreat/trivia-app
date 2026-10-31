@@ -10,6 +10,7 @@ import (
 	"time"
 	"trivia-app/dlog"
 	"trivia-app/handlers"
+	"trivia-app/util"
 
 	"github.com/gorilla/websocket"
 )
@@ -18,7 +19,7 @@ import (
 func generateToken() string {
 	var chars = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*_+-=<>?")
 	var token string
-	for i := 0; i < 64; i++ {
+	for range 64 {
 		token += string(chars[rand.Intn(len(chars))])
 	}
 	return token
@@ -29,6 +30,7 @@ type Player struct {
 	Name             string
 	Score            int
 	ButtonReady      bool
+	ButtonColor      string
 	CorrectQuestions []string
 	LastUpdate       time.Time
 	BuzzedIn         time.Time
@@ -52,6 +54,27 @@ type playerStore struct {
 
 func cleanName(name string) string {
 	return strings.TrimSpace(strings.ToLower(name))
+}
+
+func (ps *playerStore) PlayerWS(token string) error {
+	ps.mu.RLock()
+	defer ps.mu.RUnlock()
+
+	p, ok := ps.playerData[token]
+	if !ok {
+		return errors.New("player not found")
+	}
+
+	var buf bytes.Buffer
+	handlers.RenderComponent(&buf, "player-data.html", handlers.Play{Ready: p.ButtonReady, Score: p.Score, ButtonColor: p.ButtonColor})
+
+	if p.Websocket != nil {
+		return p.Websocket.WriteMessage(websocket.TextMessage, buf.Bytes())
+	} else {
+		dlog.DLog("websocket is nil")
+	}
+
+	return nil
 }
 
 // returns existing player data
@@ -91,6 +114,7 @@ func (ps *playerStore) InsertPlayer(playerName string) (string, error) {
 		Name:             playerName,
 		Score:            0,
 		ButtonReady:      true,
+		ButtonColor:      util.RandomTwColor(),
 		CorrectQuestions: make([]string, 0),
 		LastUpdate:       time.Now(),
 		BuzzedIn:         time.Time{},
@@ -294,7 +318,7 @@ func (ps *playerStore) VerifyTokenName(token, name string) bool {
 
 func (ps *playerStore) BuzzIn(token, name string) (bool, error) {
 	dlog.DLog("BuzzIn()")
-	defer dlog.DLog("leaving ResetBuzzers()")
+	defer dlog.DLog("leaving BuzzIn()")
 	ps.mu.Lock()
 	player, ok := ps.playerData[token]
 	if !ok {
@@ -331,24 +355,23 @@ func (ps *playerStore) ResetBuzzers() {
 	defer ps.mu.Unlock()
 	dlog.DLog("got lock")
 
-	// buffer containing ready buzzer
-	var buf bytes.Buffer
-	handlers.RenderComponent(&buf, "buzz-button.html", handlers.Play{Ready: true})
-
 	for token, player := range ps.playerData {
 		// update vars
 		player.ButtonReady = true
 		player.BuzzedIn = time.Time{}
 		dlog.DLog("reseting buzzer for", player.Name)
 
+		// buffer containing ready buzzer
+		var buf bytes.Buffer
+		handlers.RenderComponent(&buf, "player-data.html", handlers.Play{Ready: player.ButtonReady, Score: player.Score, ButtonColor: player.ButtonColor})
+
 		// send message to websocket/client
 		if player.Websocket != nil {
 			err := player.Websocket.WriteMessage(websocket.TextMessage, buf.Bytes())
-			// FIX THIS ERROR HANDLING. probably causes error with handler
+			// TODO: FIX THIS ERROR HANDLING. probably causes error with wshandler if ws already closed
 			if err != nil {
 				dlog.DLog("error reseting buzzer")
-				player.Websocket.Close()
-				player.Websocket = nil
+				player.WsClose <- true
 			}
 		} else {
 			dlog.DLog("websocket is nil")
