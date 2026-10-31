@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -31,13 +32,16 @@ func EnvVal(key string) string {
 
 func GetIP() string {
 	ip := EnvVal("IP")
-	log.Println("env val ip", ip)
+
 	if ip == "" {
 		ip = "localhost:8080"
 	}
-
 	if net.ParseIP(ip) != nil {
-		return ip + ":8080"
+		ip += ":8080"
+	}
+
+	if !strings.HasPrefix(ip, "http://") && !strings.HasPrefix(ip, "https://") {
+		ip = "http://" + ip
 	}
 	return ip
 }
