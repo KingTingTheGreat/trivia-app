@@ -32,17 +32,17 @@ func EnvVal(key string) string {
 
 func GetIP() string {
 	ip := EnvVal("IP")
-
 	if ip == "" {
-		ip = "localhost:8080"
-	}
-	if net.ParseIP(ip) != nil {
-		ip += ":8080"
+		ip = "localhost"
 	}
 
-	if !strings.HasPrefix(ip, "http://") && !strings.HasPrefix(ip, "https://") {
-		ip = "http://" + ip
+	if net.ParseIP(ip) != nil {
+		ip = net.JoinHostPort(ip, "8080")
+		if !strings.HasPrefix(ip, "http://") && !strings.HasPrefix(ip, "https://") {
+			ip = "http://" + ip
+		}
 	}
+
 	return ip
 }
 
