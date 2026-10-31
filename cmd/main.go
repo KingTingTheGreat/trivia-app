@@ -15,6 +15,7 @@ func main() {
 
 	log.Println("loading .env")
 	env.LoadEnv()
+	handlers.InitQrCode()
 	shared.LoadPassword()
 
 	go ws_handlers.BroadcastLeaderboard()

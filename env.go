@@ -3,6 +3,7 @@ package env
 import (
 	_ "embed"
 	"log"
+	"net"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -30,8 +31,13 @@ func EnvVal(key string) string {
 
 func GetIP() string {
 	ip := EnvVal("IP")
+	log.Println("env val ip", ip)
 	if ip == "" {
-		return "localhost"
+		ip = "localhost:8080"
+	}
+
+	if net.ParseIP(ip) != nil {
+		return ip + ":8080"
 	}
 	return ip
 }
