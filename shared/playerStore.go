@@ -4,26 +4,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"math/rand"
 	"strings"
 	"sync"
 	"time"
 	"trivia-app/dlog"
 	"trivia-app/handlers"
 	"trivia-app/util"
+	"uuid"
 
 	"github.com/gorilla/websocket"
 )
-
-// generates a random 64 character token
-func generateToken() string {
-	var chars = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*_+-=<>?")
-	var token string
-	for range 64 {
-		token += string(chars[rand.Intn(len(chars))])
-	}
-	return token
-}
 
 type Player struct {
 	CleanName        string
@@ -104,9 +94,9 @@ func (ps *playerStore) InsertPlayer(playerName string) (string, error) {
 		return "", errors.New("a player with this name already exists")
 	}
 
-	token := generateToken()
+	token := uuid.New().String()
 	for _, ok := ps.playerData[token]; ok; {
-		token = generateToken()
+		token = uuid.New().String()
 	}
 
 	player := Player{
