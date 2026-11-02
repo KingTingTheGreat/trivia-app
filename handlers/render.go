@@ -10,7 +10,9 @@ import (
 )
 
 type Play struct {
-	Ready bool
+	Ready       bool
+	Score       int
+	ButtonColor string
 }
 
 func RenderTemplate(w http.ResponseWriter, filename string, data any) {
@@ -31,7 +33,7 @@ func RenderTemplate(w http.ResponseWriter, filename string, data any) {
 
 func RenderComponent(w io.Writer, filename string, data any) {
 	// parse component
-	tmpl := template.Must(template.ParseFS(views.Components, "components/"+filename))
+	tmpl := template.Must(template.ParseFS(views.Components, "components/*.html"))
 
 	err := tmpl.ExecuteTemplate(w, strings.TrimRight(filename, ".html"), data)
 	if err != nil {

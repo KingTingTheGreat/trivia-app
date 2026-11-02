@@ -3,13 +3,14 @@ document.addEventListener("htmx:wsAfterMessage", (e) => {
   if (
     !e.detail.elt["htmx-internal-data"].webSocket.socket.url.endsWith(
       "/buzzed-in-ws",
-    )
+    ) ||
+    e.detail.message === "\x1F"
   ) {
     return;
   }
 
   const buzzedIn = document.getElementById("buzzed-in-body");
-  if (buzzedIn && buzzedIn.rows?.length > 0) {
+  if (buzzedIn && buzzedIn.childElementCount > 0) {
     console.log("playing buzzer audio");
     audio.play();
   }

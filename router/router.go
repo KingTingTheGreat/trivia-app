@@ -32,6 +32,7 @@ func Router() *http.ServeMux {
 	router.HandleFunc("GET /health", rest_handlers.Health)
 
 	// player flow, create and buzz
+	router.HandleFunc("GET /player", rest_handlers.GetPlayer)
 	router.HandleFunc("POST /player", rest_handlers.PostNewPlayer)
 	if shared.ReactiveBuzzers() {
 		router.HandleFunc("/buzz", ws_handlers.BuzzWS)

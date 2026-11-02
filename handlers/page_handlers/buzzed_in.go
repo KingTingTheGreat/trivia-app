@@ -11,9 +11,10 @@ func BuzzedIn(w http.ResponseWriter, r *http.Request) {
 	dlog.DLog("buzzed in handler")
 
 	data := ws_handlers.LeaderboardData{
-		Title:    "Buzzed In",
-		TableId:  "buzzed-in",
-		Endpoint: "/buzzed-in-ws",
+		TableId:     "buzzed-in",
+		Title:       "Buzzed In",
+		Description: "Players ranked by reaction speed",
+		Endpoint:    "/buzzed-in-ws",
 	}
 
 	handlers.RenderTemplate(w, "buzzed-in.html", data)

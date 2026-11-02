@@ -3,6 +3,7 @@ package ws_handlers
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 	"sort"
 	"time"
@@ -21,11 +22,36 @@ type leaderboardPlayer struct {
 }
 
 type LeaderboardData struct {
-	TableId  string
-	Title    string
-	Headers  []string
-	RowData  [][]string
-	Endpoint string
+	TableId      string
+	Title        string
+	Description  string
+	EmptyMessage string
+	TableData    []TableRow
+	Endpoint     string
+}
+
+func rankColor(place int) string {
+	switch place {
+	case 1:
+		return "#FFD700"
+	case 2:
+		return "#C0C0C0"
+	case 3:
+		return "#CD7F32"
+	default:
+		return ""
+	}
+}
+
+func renderLeaderboard(w io.Writer) {
+	handlers.RenderComponent(w, "table-body.html", LeaderboardData{
+		TableId:      "leaderboard",
+		Title:        "Leaderboard",
+		Description:  "Top players by score",
+		EmptyMessage: "Players will appear here once they join",
+		TableData:    MakeLeaderboard(),
+	})
+
 }
 
 func LeaderboardWS(w http.ResponseWriter, r *http.Request) {
@@ -41,21 +67,13 @@ func LeaderboardWS(w http.ResponseWriter, r *http.Request) {
 
 	// write current state (this is for reconnections)
 	var buf bytes.Buffer
-	handlers.RenderComponent(&buf, "table-body.html", LeaderboardData{
-		TableId: "leaderboard",
-		Title:   "Leaderboard",
-		Headers: []string{
-			"Name",
-			"Score",
-		},
-		RowData: MakeLeaderboard(),
-	})
+	renderLeaderboard(&buf)
 	conn.WriteMessage(websocket.TextMessage, buf.Bytes())
 
 	go leaderboardWS.KeepAlive(conn)
 }
 
-func MakeLeaderboard() [][]string {
+func MakeLeaderboard() []TableRow {
 	playerList := shared.PlayerStore.AllPlayers()
 
 	// sort by score, then last updated, then name
@@ -70,11 +88,20 @@ func MakeLeaderboard() [][]string {
 		return pI.Name < pJ.Name
 	})
 
-	leaderboardList := make([][]string, len(playerList))
+	leaderboardList := make([]TableRow, len(playerList))
 	for i, player := range playerList {
-		leaderboardList[i] = []string{
-			player.Name,
-			fmt.Sprintf("%d", player.Score),
+		place := i + 1
+		icon := false
+		if place <= 3 {
+			icon = true
+		}
+		leaderboardList[i] = TableRow{
+			Place:    place,
+			Name:     player.Name,
+			Data:     fmt.Sprintf("%d", player.Score),
+			DataDesc: "Points",
+			Icon:     icon,
+			Color:    rankColor(place),
 		}
 	}
 
@@ -92,15 +119,7 @@ func BroadcastLeaderboard() {
 				break
 			}
 		}
-		handlers.RenderComponent(&buf, "table-body.html", LeaderboardData{
-			TableId: "leaderboard",
-			Title:   "Leaderboard",
-			Headers: []string{
-				"Name",
-				"Score",
-			},
-			RowData: MakeLeaderboard(),
-		})
+		renderLeaderboard(&buf)
 		leaderboardWS.WriteToAll(buf.Bytes())
 	}
 }

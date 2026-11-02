@@ -1,6 +1,7 @@
 package rest_handlers
 
 import (
+	"bytes"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -9,9 +10,11 @@ import (
 	"trivia-app/handlers"
 	"trivia-app/shared"
 	"trivia-app/util"
+
+	"github.com/gorilla/websocket"
 )
 
-func GetPlayerName(w http.ResponseWriter, r *http.Request) {
+func GetPlayer(w http.ResponseWriter, r *http.Request) {
 	token, err := util.ReadToken(r)
 	if err != nil {
 		util.InputError(w, r, util.NO_COOKIE)
@@ -24,8 +27,19 @@ func GetPlayerName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	name := r.URL.Query().Get("name")
+	if name == "" {
+		util.InputError(w, r, util.NOT_FOUND)
+		return
+	}
+
+	if player.Name != name {
+		util.InputError(w, r, util.NOT_FOUND)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(player.Name))
+	w.Write([]byte("OK"))
 }
 
 func PostNewPlayer(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +101,8 @@ func UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	action := strings.ToLower(util.ReadValue(r, "action"))
-	if action == "update" {
+	switch action {
+	case "update":
 		amountStr := util.ReadValue(r, "amount")
 		if amountStr == "" {
 			util.InputError(w, r, "no amount provided")
@@ -102,15 +117,30 @@ func UpdatePlayer(w http.ResponseWriter, r *http.Request) {
 		shared.PlayerStore.PutPlayer(token, shared.UpdatePlayer{
 			ScoreDiff: &amount,
 		})
-	} else if action == "clear" {
+	case "clear":
 		shared.PlayerStore.ZeroPlayer(token)
-	} else {
+	default:
 		dlog.DLog("invalid action", action)
 		util.InputError(w, r, util.INVALID_ACTION)
 		return
 	}
 
 	go func() { shared.LeaderboardChan <- true }()
+	go func() {
+		player, ok := shared.PlayerStore.GetPlayer(token)
+		if !ok {
+			return
+		}
+
+		var buf bytes.Buffer
+		handlers.RenderComponent(&buf, "player-data.html", handlers.Play{Ready: player.ButtonReady, Score: player.Score, ButtonColor: player.ButtonColor})
+		if player.Websocket != nil {
+			err := player.Websocket.WriteMessage(websocket.TextMessage, buf.Bytes())
+			if err != nil {
+				player.WsClose <- true
+			}
+		}
+	}()
 
 	util.Success(w, r)
 }

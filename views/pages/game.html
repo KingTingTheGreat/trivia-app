@@ -1,6 +1,14 @@
 {{ define "content" }}
-<main class="flex justify-around w-screen p-4">
-  {{ block "table-display" .Leaderboard }}{{ end }} {{ block "table-display"
-  .BuzzedIn }}{{ end }}
+<main class="flex justify-center w-dvw p-8">
+  <div
+    class="flex max-sm:flex-col w-full justify-around max-sm:items-center max-w-[1000px] gap-12"
+  >
+    <div class="w-1/2 min-w-xs">
+      {{ block "table-display" .Leaderboard }}{{ end }}
+    </div>
+    <div class="w-1/2 min-w-xs">
+      {{ block "table-display" .BuzzedIn }}{{ end }}
+    </div>
+  </div>
 </main>
 {{ end }}

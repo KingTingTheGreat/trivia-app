@@ -1,19 +1,27 @@
 {{ define "buzz-button" }}
-<button
-  type="submit"
-  id="buzz-button"
-  class="p-6 w-60 aspect-square select-none text-center text-6xl rounded-full {{ if .Ready }} text-black bg-green-300 active:ring-gray-400 {{ else }} text-gray-600 bg-gray-400 {{ end }}"
-  {{
-  if
-  .Ready
-  }}{{
-  else
-  }}
-  disabled
-  {{
-  end
-  }}
->
-  Buzz
-</button>
+<div class="relative grid place-items-center w-64 h-64">
+  {{ if .Ready }}
+  <span
+    aria-hidden="true"
+    class="absolute m-auto inset-0 w-48 h-48 rounded-full {{ .ButtonColor }} blur-lg opacity-90 transition-all duration-300"
+  ></span>
+  {{ end }}
+
+  <button
+    type="submit"
+    {{
+    if
+    .Ready
+    }}{{
+    else
+    }}
+    disabled
+    {{
+    end
+    }}
+    class="group relative w-48 h-48 text-2xl font-bold cursor-pointer rounded-full transition-all duration-200 {{ if .Ready }}text-white {{ .ButtonColor }} group-active:scale-95{{ else }}text-gray-500 bg-gray-300{{ end }}"
+  >
+    {{ if .Ready }}BUZZ IN{{ else }}Wait{{ end }}
+  </button>
+</div>
 {{ end }}

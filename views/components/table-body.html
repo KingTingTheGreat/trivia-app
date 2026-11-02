@@ -1,22 +1,37 @@
 {{ define "table-body" }}
-<table id="{{.TableId}}-table" class="border-collapse">
-  <thead>
-    <tr>
-      {{ range $i, $header := .Headers }}
-      <th class="px-6 py-2 border-solid border-2 text-xl">{{ $header }}</th>
-      {{end}}
-    </tr>
-  </thead>
-  <tbody id="{{.TableId}}-body">
-    {{ range $i, $r := .RowData }}
-    <tr class="border-2">
-      {{ range $j, $d := $r }}
-      <td class="text-center py-2 px-4 border-2 text-lg font-medium">
-        {{ $d }}
-      </td>
-      {{ end }}
-    </tr>
+<div
+  id="{{.TableId}}-table"
+  class="overflow-hidden border border-gray-200 rounded-xl py-4 w-full"
+>
+  {{ if len .TableData }}
+  <div id="{{.TableId}}-body">
+    {{ range $i, $data := .TableData }}
+    <div
+      class="flex items-start gap-4 p-4 transition-colors hover:bg-muted/50 {{ if ne $i 0 }} border-t border-gray-200 {{ end }}"
+    >
+      <div class="flex w-12 items-center justify-center">
+        <span
+          class="text-2xl font-semibold text-gray-500"
+          style="color: {{ $data.Color }};"
+        >
+          {{ if $data.Icon }} {{ block "trophy-icon" . }}{{ end }} {{ else }} {{
+          $data.Place }} {{ end }}
+        </span>
+      </div>
+
+      <div class="flex-1">
+        <p class="font-medium text-2xl">{{ $data.Name }}</p>
+      </div>
+
+      <div class="text-right">
+        <p class="font-bold text-xl">{{ $data.Data }}</p>
+        <p class="text-xs">{{ $data.DataDesc }}</p>
+      </div>
+    </div>
     {{ end }}
-  </tbody>
-</table>
+  </div>
+  {{ else }}
+  <div>{{ block "empty-table-state" . }}{{ end }}</div>
+  {{ end }}
+</div>
 {{ end }}

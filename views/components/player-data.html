@@ -1,0 +1,6 @@
+{{ define "player-data" }}
+<div id="player-data" class="flex flex-col gap-4">
+  <p class="text-center">Score: {{ .Score }}</p>
+  {{ block "buzz-button" . }}{{ end }}
+</div>
+{{ end }}

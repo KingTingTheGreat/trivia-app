@@ -1,0 +1,25 @@
+{{ define "empty-table-state" }}
+<div class="flex flex-col items-center justify-center p-12 text-center">
+  <div class="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="40"
+      height="40"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-muted-foreground"
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  </div>
+  <h3 class="mb-2 text-lg font-semibold">No players yet</h3>
+  <p class="text-sm">{{ .EmptyMessage }}</p>
+</div>
+{{ end }}
