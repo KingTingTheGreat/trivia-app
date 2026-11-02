@@ -44,9 +44,9 @@ func Pages(w http.ResponseWriter, r *http.Request) {
 				Path:        "/game",
 			},
 			{
-				Title:       "Control",
+				Title:       "Admin",
 				Description: "access game controls",
-				Path:        "/control",
+				Path:        "/admin",
 			},
 		},
 	}

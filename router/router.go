@@ -41,7 +41,7 @@ func Router() *http.ServeMux {
 	}
 
 	// game controls
-	router.HandleFunc("GET /control", page_handlers.Control)
+	router.HandleFunc("GET /admin", page_handlers.Admin)
 	router.HandleFunc("POST /auth/reset-buzzers", rest_handlers.ResetBuzzers)
 	router.HandleFunc("POST /auth/reset-game", rest_handlers.ResetGame)
 	router.HandleFunc("PUT /auth/player", rest_handlers.UpdatePlayer)

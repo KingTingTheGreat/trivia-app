@@ -1,5 +1,5 @@
 if (
-  ["/control", "/leaderboard", "/buzzed-in", "/game"].includes(
+  ["/admin", "/leaderboard", "/buzzed-in", "/game"].includes(
     window.location.pathname,
   )
 ) {

@@ -22,7 +22,7 @@ A live buzzer system
 
 ### Host
 
-- Visit _HostIP_:8080/control to access controls
+- Visit _HostIP_:8080/admin to access controls
   - Enter the configured password
   - Select a player's name and the number of points you'd like to give them
     - A positive value will add to their score while a negative value will subtract from it. Negative scores are possible.

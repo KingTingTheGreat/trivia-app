@@ -8,17 +8,17 @@ import (
 	"trivia-app/handlers/ws_handlers"
 )
 
-type ControlData struct {
+type AdminData struct {
 	Error       string
 	Leaderboard ws_handlers.LeaderboardData
 	BuzzedIn    ws_handlers.LeaderboardData
 	PlayerList  []string
 }
 
-func Control(w http.ResponseWriter, r *http.Request) {
-	dlog.DLog("control handler")
+func Admin(w http.ResponseWriter, r *http.Request) {
+	dlog.DLog("admin handler")
 	playerList := ws_handlers.AllPlayerNames()
-	data := ControlData{
+	data := AdminData{
 		Leaderboard: ws_handlers.LeaderboardData{
 			TableId:     "leaderboard",
 			Title:       "Leaderboard",
@@ -36,5 +36,5 @@ func Control(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(playerList)
 
-	handlers.RenderTemplate(w, "control.html", data)
+	handlers.RenderTemplate(w, "admin.html", data)
 }

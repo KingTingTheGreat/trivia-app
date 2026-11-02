@@ -1,6 +1,6 @@
 console.log("ping-pong.js loaded");
 if (
-  ["/game", "/control", "/leaderboard", "/buzzed-in"].includes(
+  ["/admin", "/leaderboard", "/buzzed-in", "/game"].includes(
     window.location.pathname,
   ) ||
   window.location.pathname.startsWith("/play/")

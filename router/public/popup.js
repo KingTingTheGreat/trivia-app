@@ -1,4 +1,4 @@
-if (["/control", "/buzzed-in", "/game"].includes(window.location.pathname)) {
+if (["/admin", "/buzzed-in", "/game"].includes(window.location.pathname)) {
   showPopup();
   document.addEventListener("click", hidePopup);
 }
