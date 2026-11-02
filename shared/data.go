@@ -12,5 +12,4 @@ var (
 			return true
 		},
 	}
-	QuestionNumber = 0
 )

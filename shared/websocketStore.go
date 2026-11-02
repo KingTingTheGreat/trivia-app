@@ -37,8 +37,6 @@ func (ws *websocketStore) WriteToAll(data []byte) {
 	}
 }
 
-const READ_DEADLINE = 10 // seconds
-
 func (ws *websocketStore) KeepAlive(conn *websocket.Conn) {
 	defer func(conn *websocket.Conn) {
 		// closing websocket is handled in util.HandleWebSocket
